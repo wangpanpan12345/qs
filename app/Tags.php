@@ -22,5 +22,8 @@ class Tags extends Moloquent
         return $this->hasMany('App\Tags','group_id', 'id');
     }
 
-
+    public function knowledge()
+    {
+        return $this->hasMany('App\KnowledgeCanned', 'tags', 'name');
+    }
 }

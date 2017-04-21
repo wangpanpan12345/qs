@@ -22,12 +22,14 @@ Route::post('/dy_search', 'SearchAdminController@insert_search');
 Route::post('/add_company', 'CompanyAdminController@add');
 Route::post('/update_company', 'CompanyAdminController@update');
 Route::post('/company/name/dy', 'SearchAdminController@name_k_dy');
+Route::get('/company/name/dy', 'SearchAdminController@name_k_dy');
 Route::post('/person/name/dy', 'SearchAdminController@name_k_p_dy');
-
+Route::get('/person/name/dy','SearchAdminController@name_k_p_dy');
 Route::post('/dailynews/company','PhantomjsController@daily_news_company');
 Route::post('/dailynews/person','PhantomjsController@daily_news_person');
 Route::get('/dailynews/tags/','TagController@tag_search');
 Route::post('/dailynews/tags/','TagController@tag_search');
+Route::get('/job/tags/','TagController@job_tags');
 Route::get('/dailynews/company/date','PhantomjsController@daily_news_date');
 Route::post('/dailynews/tags/update','PhantomjsController@daily_news_tags_update');
 Route::post('/tags/add','TagController@add');

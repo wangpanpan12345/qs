@@ -116,12 +116,12 @@
                 <label class="latest">today</label>
             @endif
             <div class="date_wrap">
-                <span class="news_date">{{ Carbon\Carbon::parse($V->pub_date["date"])->toDateString()}}</span>
+                <span class="news_date">{{ Carbon\Carbon::parse($V->pub_date_f["date"])->toDateString()}}</span>
             </div>
 
             <div class="content_wrap">
                 <span class="title">
-                    <a href="{{$V->link}}" target="_blank">{{$V->company}}</a>
+                    <a href="{{$V->link}}" target="_blank">{{$V->company_df}}</a>
                 </span>
             </div>
             <div class="content_wrap">

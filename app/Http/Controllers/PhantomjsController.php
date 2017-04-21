@@ -10,8 +10,10 @@ namespace App\Http\Controllers;
 
 use App\DailyNews;
 
+use App\Jobs\CrawlWeMedia;
 use App\Tags;
 use Carbon\Carbon;
+use App\Companies;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +21,7 @@ use Illuminate\Support\Facades\Response;
 use JonnyW\PhantomJs\Client;
 use Vinelab\Rss\Rss;
 use App\Jobs\CrawlMedia;
+use App\UserCollects;
 
 //use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +29,11 @@ ini_set('max_execution_time', 0);
 
 include 'simple_html_dom.php';
 
-
+/**
+ * DailyNews 相关的类
+ * Class PhantomjsController
+ * @package App\Http\Controllers
+ */
 class PhantomjsController extends Controller
 {
     /**
@@ -67,57 +74,24 @@ class PhantomjsController extends Controller
             "singularityhub_science" => "https://singularityhub.com/science/",
             "singularityhub_technology" => "https://singularityhub.com/technology/",
             "deepmind" => "https://deepmind.com/blog/feed/basic/",
+            "forbes" => "http://www.forbes.com/healthcare/",
 
             //            "popsci" => "http://www.popsci.com/health",
             //            "newswise" => "http://www.newswise.com/articles/list?category=latest",
             //            "mdtmag" => "https://www.mdtmag.com/",
-            //重要期刊
-//            "nature_news" => "http://www.nature.com/news/",
-//            "nature_biological" => "http://www.nature.com/nature/research/biological-sciences.html",
-//            "nature_nbt_research" => "http://www.nature.com/nbt/research/index.html",
-//            "nature_nbt_news" => "http://www.nature.com/nbt/newsandcomment/index.html",
-//            "nature_ng_research" => "http://www.nature.com/ng/research/index.html",
-//            "nature_ng_news" => "http://www.nature.com/ng/newsandcomment/index.html",
-//            "nature_ni_research" => "http://www.nature.com/ni/research/index.html",
-//            "nature_ni_news" => "http://www.nature.com/ni/newsandcomment/index.html",
-//            "nature_nm_research" => "http://www.nature.com/nm/research/index.html",
-//            "nature_nm_news" => "http://www.nature.com/nm/newsandcomment/index.html",
-//            "nature_nmicrobiol_news" => "http://www.nature.com/nmicrobiol/news-and-comment",
-//            "nature_nmicrobiol_research" => "http://www.nature.com/nmicrobiol/research",
-//            "nature_nnano_news" => "http://www.nature.com/nnano/newsandcomment/index.html",
-//            "nature_nnano_research" => "http://www.nature.com/nnano/research/index.html",
-//            "nature_neuro_research" => "http://www.nature.com/neuro/research/index.html",
-//            "nature_neuro_news" => "http://www.nature.com/neuro/newsandcomment/index.html",
-//            "cell" => "http://www.cell.com/cell/newarticles",
-//            "sciencemag_news" => "http://www.sciencemag.org/news/latest-news",
-//            "sciencemag_advances" => "http://advances.sciencemag.org/",
-//            "sciencemag_robotics" => "http://robotics.sciencemag.org/",
-//            "sciencemag_stm" => "http://stm.sciencemag.org/",
-//            "nejm" => "http://www.nejm.org/medical-articles/research",
-//            "thelancet_news" => "http://www.thelancet.com/online-first-news-comment",
-//
-//            "jamanetwork" => "http://jamanetwork.com/journals/jama/currentissue",
-//            "elifesciences" => "https://elifesciences.org/",
-//            "bmj_news" => "http://www.bmj.com/news/news?category=News",
-//            "bmj_research" => "http://www.bmj.com/research/research",
-//            "bmj_research_news" => "http://www.bmj.com/research/research%20news",
-//            "thelancet_research" => "http://www.thelancet.com/online-first-research",
-//
-////            "medcitynews"=>"http://medcitynews.com/",
-//            //投融资数据
-//            "itjuzi_funding" => "https://www.itjuzi.com/investevents?scope=47",
-//            "cyzone" => "http://www.cyzone.cn/event/list-764-3497-1-0-0-0-0/",
         ];
     }
+
     public function funds_array()
     {
         return [
             //投融资数据
             "itjuzi_funding" => "https://www.itjuzi.com/investevents?scope=47",
-            "itjuzi_funding_f" => "https://www.itjuzi.com/investevents/foreign?scope=47",
+            "itjuzi_funding_f" => "https://www.itjuzi.com/investevents?location=out&scope=47",
             "cyzone" => "http://www.cyzone.cn/event/list-764-3497-1-0-0-0-0/",
         ];
     }
+
     public function journal_array()
     {
         return [
@@ -139,47 +113,147 @@ class PhantomjsController extends Controller
             "nature_neuro_research" => "http://www.nature.com/neuro/research/index.html",
             "nature_neuro_news" => "http://www.nature.com/neuro/newsandcomment/index.html",
             "cell" => "http://www.cell.com/cell/newarticles",
+            "cell_current" => "http://www.cell.com/cell/current",
             "sciencemag_news" => "http://www.sciencemag.org/news/latest-news",
             "sciencemag_advances" => "http://advances.sciencemag.org/",
             "sciencemag_robotics" => "http://robotics.sciencemag.org/",
             "sciencemag_stm" => "http://stm.sciencemag.org/",
             "nejm" => "http://www.nejm.org/medical-articles/research",
+            "nejm_toc" => "http://www.nejm.org/toc/nejm/medical-journal",
             "thelancet_news" => "http://www.thelancet.com/online-first-news-comment",
 
             "jamanetwork" => "http://jamanetwork.com/journals/jama/currentissue",
-//            "jamanetwork" => "http://jamanetwork.com/journals/jama/currentissue",
             "elifesciences" => "https://elifesciences.org/",
             "bmj_news" => "http://www.bmj.com/news/news?category=News",
             "bmj_research" => "http://www.bmj.com/research/research",
             "bmj_research_news" => "http://www.bmj.com/research/research%20news",
             "thelancet_research" => "http://www.thelancet.com/online-first-research",
+            //医学
+            "ca_cancer" => "http://onlinelibrary.wiley.com/rss/journal/10.3322/(ISSN)1542-4863",
+            "immunity" => "http://www.cell.com/immunity/current.rss",
+            "annals" => "http://annals.org/rss/site_25/onlineFirst_90.xml",
+            "jco" => "http://ascopubs.org/action/showFeed?type=etoc&feed=rss&jc=jco",
+            "jci" => "https://www.jci.org/just-published",
+            "cell_neurosciences" => "http://www.cell.com/trends/neurosciences/newarticles",
+//            "brain_sciences " => "https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/latest-issue",
+            "gastrojournal" => "http://www.gastrojournal.org/current.rss",
+            "annals_surgery" => "http://www.gastrojournal.org/current",
+            "jbjsjournal" => "http://journals.lww.com/jbjsjournal/_layouts/15/OAKS.Journals/feed.aspx?FeedType=CurrentIssue",
+
+        ];
+    }
+
+    public function policy_array()
+    {
+        return [
+            //卫计委
+            "nhfpc_news" => "http://www.nhfpc.gov.cn/yzygj/pqt/new_list.shtml",
+            "nhfpc_policy" => "http://www.nhfpc.gov.cn/yzygj/zcwj2/new_zcwj.shtml",
+            "nhfpc_trends" => "http://www.nhfpc.gov.cn/yzygj/pgzdt/new_list.shtml",
+            "nhfpc_tigs_news" => "http://www.nhfpc.gov.cn/tigs/pqt/new_list.shtml",
+            "nhfpc_tigs_policy" => "http://www.nhfpc.gov.cn/tigs/zcwj2/new_zcwj.shtml",
+            "nhfpc_tigs_trends" => "http://www.nhfpc.gov.cn/tigs/pgzdt/new_list.shtml",
+            "nhfpc_jws_news" => "http://www.nhfpc.gov.cn/jws/pqt/new_list.shtml",
+            "nhfpc_jws_policy" => "http://www.nhfpc.gov.cn/jws/zcwj2/new_zcwj.shtml",
+            "nhfpc_jws_trends" => "http://www.nhfpc.gov.cn/jws/pgzdt/new_list.shtml",
+            "nhfpc_xwfb" => "http://www.nhfpc.gov.cn/zhuz/xwfb/list.shtml",
+            "nhfpc_gwyxx" => "http://www.nhfpc.gov.cn/zhuz/gwyxx/list.shtml",
+            "nhfpc_zwgk" => "http://www.nhfpc.gov.cn/zwgk/index.shtml",
+            //中国网
+            "china_zhibo" => "http://www.china.com.cn/zhibo/node_7243160.htm",
+            "china_zhibo_guoxin" => "http://www.china.com.cn/zhibo/node_7245314.htm",
+            "china_zhibo_chuifeng" => "http://www.china.com.cn/zhibo/node_7243162.htm",
+            "china_zhibo_buwei" => "http://www.china.com.cn/zhibo/node_7243172.htm",
+            "china_zhibo_renda" => "http://www.china.com.cn/zhibo/node_7243164.htm",
+            "china_zhibo_huiyi" => "http://www.china.com.cn/zhibo/node_7243168.htm",
+//            深圳卫计委
+            "szhfpc_wzx" => "http://www.szhfpc.gov.cn/wzx/",//微资讯
+            "szhfpc_tjsj" => "http://www.szhfpc.gov.cn/xxgk/tjsj/zxtjxx/",//统计数据
+            "szhfpc_gzdt" => "http://www.szhfpc.gov.cn/gzdt/",//工作动态
+            "szhfpc_gzjb" => "http://www.szhfpc.gov.cn/jksz/gzjb/",//工作简报
+            "szhfpc_mybh" => "http://www.szhfpc.gov.cn/xxgk/zcfggfxwj/mybh_5/",//医疗监督管理
+            "szhfpc_zcjd" => "http://www.szhfpc.gov.cn/xxgk/zcfggfxwj/zcjd/",//政策解读
+            "szhfpc_ghjh" => "http://www.szhfpc.gov.cn/xxgk/ghjh/gmjjshfzghjh_3/",//发展规划
+            "szhfpc_zxgh" => "http://www.szhfpc.gov.cn/xxgk/ghjh/zxgh/",//专项规划
+            "szhfpc_ndgzjh" => "http://www.szhfpc.gov.cn/xxgk/ghjh/ndgzjh/",//年度规划总结
+//            上海卫计委
+            "wsjsw_n422" => "http://www.wsjsw.gov.cn/wsj/n422/n424/index.html",//新闻发布
+            "wsjsw_n429" => "http://www.wsjsw.gov.cn/wsj/n429/n430/index.html",//公开政府信息
+            "wsjsw_n432" => "http://www.wsjsw.gov.cn/wsj/n429/n432/n1488/n1489/index.html",//政策解读
+//            食药监局
+            "sda_CL0004" => "http://www.sda.gov.cn/WS01/CL0004/",
+            "sda_CL0051" => "http://www.sda.gov.cn/WS01/CL0051/",
+            "sda_CL0011" => "http://www.sda.gov.cn/WS01/CL0011/",
+            "sda_CL0006" => "http://www.sda.gov.cn/WS01/CL0006/",
+            "sda_CL1748" => "http://www.sda.gov.cn/WS01/CL1748/",
+            "sda_CL1913" => "http://www.sda.gov.cn/WS01/CL1913/",
+            "sda_CL0412" => "http://www.sda.gov.cn/WS01/CL0412/",
+            "sda_CL1026" => "http://www.sda.gov.cn/WS01/CL1026/",
+            //中华医学会
+            "cma" => "http://www.cma.org.cn/index/index.html",
+            "medscape" => "http://www.medscape.com/",
+            "ama_assn" => "https://wire.ama-assn.org/",
+            //新华网
+            "xinhua" => "http://www.news.cn/health/",
+            "xinhua_bw" => "http://www.news.cn/health/bwzx.htm",
+            "xinhua_cy" => "http://www.news.cn/health/cydt.htm",
+            "xinhua_zy" => "http://www.news.cn/health/zyzy.htm",
+            "xinhua_ys" => "http://www.news.cn/health/yscy.htm",
+            "xinhua_qn" => "http://www.news.cn/health/qnys.htm",
+            "xinhua_ft" => "http://www.news.cn/health/jkft.htm",
+            //人民网
+            "people_bx" => "http://health.people.com.cn/GB/408579/index.html",
+            "people_zc" => "http://health.people.com.cn/GB/408564/index.html",
         ];
     }
 
     /**
-     * 任务启动器
+     *
+     */
+    public function expert_policy()
+    {
+        return [
+//            "healthpolicy" => "http://www.healthpolicy.cn/app/search/db/expert/outline.action?page_change=true&page.pageNo=1&page.pageSize=1500&page.licenseCode=&page.trsOrderby=&class_id=&sid=&tid=&dbnames=EXPERT&temp_field=&temp_dbnames=EXPERT&isMultiDb=true&isStat=0&ds=summary&statSubject=&statOrganization=&statTime=&statTutor=&statJournal=&statAuthor=&lastField=&lastValue=&advanced=&sql=&dateBegin=&dateEnd=&logic1=AND&logic2=&logic3=&logic4=&f1=&f2=&f3=&f4=&v1=&v2=&v3=&v4=&flag1=&flag2=&flag3=&flag4=&cn_keywords=&field=default&DEPARTMENT=&value=&ExternalDocsXML=&email=&comments="
+//            "gcyuanshi" => "http://www.cae.cn/cae/jsp/qtysmd.jsp?ColumnID=135",
+//            "kxyuanshi" => "http://www.casad.cas.cn/chnl/374/index.html",
+//            "qrjh_1" => "http://www.1000plan.org/wiki/index.php?category-view-13-1",
+                "fellowplus"=>"https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=6&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D",
+        ];
+    }
+
+    /**
+     * 采集任务启动器
      */
     public function starter()
     {
         $funds = $this->funds_array();
         $journal = $this->journal_array();
         $medias = $this->media_array();
-        foreach ($medias as $key => $value) {
-            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+        $policy = $this->policy_array();
+//        $expert = $this->expert_policy();
+//        foreach ($expert as $key => $value) {
+//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//        }
+        for($i=7;$i<355;$i++){
+            $this->dispatch(new CrawlMedia(array("url" => "https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=".$i."&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D", "func" => "fellowplus")));
         }
-        foreach ($funds as $key => $value) {
-            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
-        }
-        foreach ($journal as $key => $value) {
-            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
-        }
-    }
-    public function media_starter(){
 
+//        foreach ($medias as $key => $value) {
+//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//        }
+//        foreach ($funds as $key => $value) {
+//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//        }
+//        foreach ($journal as $key => $value) {
+//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//        }
+//        foreach ($policy as $key => $value) {
+//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//        }
     }
 
     /**
-     * 每日新闻的列表页
+     * 每日新闻的列表页(科技)
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function daily_list()
@@ -187,22 +261,51 @@ class PhantomjsController extends Controller
 
         $limit = 60;
         $projections = ['*'];
-        $dailynews = DailyNews::orderBy('created_at', 'desc')->paginate($limit, $projections);
+        $dailynews = DailyNews::where("flag", 1)->orderBy('created_at', 'desc')->paginate($limit, $projections);
 //        dd($dailynews);
         return view('admin.dailylist', array('dn' => $dailynews));
-        dd($dailynews);
     }
 
     /**
-     *
+     * 每日新闻的列表页(政策)
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function source($source){
+    public function daily_list_p()
+    {
+
         $limit = 60;
         $projections = ['*'];
-        $dailynews = DailyNews::where("source","=",$source)->orderBy('created_at', 'desc')->paginate($limit, $projections);
+        $dailynews = DailyNews::where("flag", 2)->orderBy('created_at', 'desc')->paginate($limit, $projections);
+//        dd($dailynews);
+        return view('admin.dailylistp', array('dn' => $dailynews));
+    }
+
+    /**
+     * 科技新闻按照来源查看
+     */
+    public function source($source)
+    {
+        $limit = 60;
+        $projections = ['*'];
+        $dailynews = DailyNews::where("flag", 1)->where("source", "=", $source)->orderBy('created_at', 'desc')->paginate($limit, $projections);
 //        dd($dailynews);
         return view('admin.dailylist', array('dn' => $dailynews));
     }
+
+    /**
+     * 政策新闻按照来源查看
+     * @param $source
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function source_p($source)
+    {
+        $limit = 60;
+        $projections = ['*'];
+        $dailynews = DailyNews::where("flag", 2)->where("source", "=", $source)->orderBy('pub_date', 'desc')->paginate($limit, $projections);
+//        dd($dailynews);
+        return view('admin.dailylistp', array('dn' => $dailynews));
+    }
+
 
     /**
      * 每日新闻按关键字检索(未使用)
@@ -214,9 +317,9 @@ class PhantomjsController extends Controller
         $key = $k->get("key");
         $limit = 60;
         $projections = ['*'];
-        if($key==""){
+        if ($key == "") {
             $dailynews = DailyNews::orderBy('created_at', 'desc')->paginate($limit, $projections);
-        }else{
+        } else {
             $dailynews = DailyNews::where("title", 'like', '%' . $key . '%')->orderBy('updated_at', 'desc')->paginate($limit, $projections);
         }
         return view('admin.dailylist', array('dn' => $dailynews));
@@ -233,9 +336,14 @@ class PhantomjsController extends Controller
         $daily_news = DailyNews::find($_id);
         $daily_news->company = $r["company"];
         $o = $daily_news->save();
-        $return = ['error' => 0, 'result' => $o];
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
         return $return;
     }
+
     /**
      * 关联每日新闻的人
      * @param Request $r
@@ -315,10 +423,38 @@ class PhantomjsController extends Controller
             $daily_news->user_id = Auth::user()->id;
         }
         $o = $daily_news->save();
-        $return = ['error' => 0, 'result' => $o];
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            event(new \App\Events\PubState(Auth::user()->id, $_id));
+            $return = ['error' => 0, 'result' => $o];
+        }
         return $return;
 
     }
+
+    /**
+     * 移除该条无效新闻
+     * @param Request $r
+     * @return array
+     */
+    public function delete(Request $r)
+    {
+        $_id = $r["_id"];
+        $flag = $r["flag"];
+        $daily_news = DailyNews::find($_id);
+        $daily_news->flag = $flag;
+        $daily_news->user_id = Auth::user()->id;
+        $o = $daily_news->save();
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
+        return $return;
+
+    }
+
 
     /**
      * 每日精选新闻列表
@@ -331,6 +467,19 @@ class PhantomjsController extends Controller
         $key_news = DailyNews::where("is_pub", "=", 1)->orderby("updated_at", "desc")->paginate($limit, $projections);
         return view("admin.keynews", ["keynews" => $key_news]);
     }
+
+    /**
+     * 每日精选新闻列表(按作者)
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function key_news_author($author)
+    {
+        $limit = 30;
+        $projections = ['*'];
+        $key_news = DailyNews::where("is_pub", "=", 1)->where("user_id", $author)->orderby("created_at", "desc")->paginate($limit, $projections);
+        return view("admin.keynews", ["keynews" => $key_news, 'author' => $author]);
+    }
+
 
     /**
      * 人工添加一条新闻
@@ -352,6 +501,7 @@ class PhantomjsController extends Controller
         $company = $r["company"];
         $person = $r["person"];
         $excerpt = $r["excerpt"];
+        $flag = isset($r["flag"]) ? $r["flag"] : 1;
         $is_pub = 0;
 
         if ($excerpt != "") {
@@ -370,20 +520,87 @@ class PhantomjsController extends Controller
             "excerpt" => $excerpt,
             "is_pub" => $is_pub,
             "isread" => 0,
-            "flag" => 1,
+            "flag" => $flag,
             "user_id" => Auth::user()->id,
             "priority" => 1
         ];
-//        $return = ['error' => 0, 'result' => $add_array];
-//        return $return;
         $o = DailyNews::create($add_array);
-        $return = ['error' => 0, 'result' => $o];
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
         return $return;
     }
 
-    public function test(){
-        $D = DailyNews::where("excerpt","=","罗氏斥资3.35亿美元收购三代测序公司Genia Technologies")->get();
-        dd($D[0]->companies);
+    /**
+     * 通知信息,每小时抓取到的新闻的数量
+     */
+    public function static_notipy()
+    {
+        $today_begin = Carbon::now()->subHours(1);
+        $today_end = Carbon::now();
+        $static = DailyNews::where('created_at', '>', $today_begin)
+            ->where('created_at', '<', $today_end)
+            ->orderBy("created_at", "desc")->count();
+        event(new \App\Events\DailyNewsUpdate($static));
+
+    }
+
+    /**
+     * 通知信息,编辑的编辑状态通知
+     * @param Request $r
+     */
+    public function edit_notify(Request $r)
+    {
+        $_id = $r["_id"];
+        $_name = $r["name"];
+        event(new \App\Events\EditNotify($_name, $_id));
+
+    }
+
+    public function collect(Request $r)
+    {
+        $check = UserCollects::where("cid", $r["_id"])->where("user", Auth::user()->id)->get();
+        if (count($check)>0) {
+            $return = ['error' => 5, 'result' => $check];
+        } else {
+            $collect = new UserCollects();
+            $collect->cid = $r["_id"];
+            $collect->type = $r["type"];
+            $collect->user = Auth::user()->id;
+            $collect->flag = 1;
+            $o = $collect->save();
+            $dn = DailyNews::find($r["_id"]);
+            $cuser = (isset($dn->cuser))?$dn->cuser:[];
+            array_push($cuser,Auth::user()->id);
+            $dn->cuser = array_unique($cuser);
+            $dn->save();
+            if (!$o) {
+                $return = ['error' => 1, 'result' => $dn->cuser];
+            } else {
+                $return = ['error' => 0, 'result' => $dn->cuser];
+            }
+        }
+        return $return;
+
+    }
+
+
+    public function test()
+    {
+        $D = DailyNews::where("company", "!=", "")->get();
+        $count = 0;
+        foreach ($D as $k => $v) {
+            $C = Companies::where("name", $v["company"])->first();
+            $id = $C["_id"];
+            $name = $C["name"];
+            $v->company = [["_id" => $id, "name" => $name]];
+            $v->save();
+//            dd($v["title"]);
+        }
+        echo $count;
+        dd($D);
     }
 
 

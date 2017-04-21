@@ -1,8 +1,21 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Founders;
+use App\Media\SphinxXmlpipe;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use SphinxClient;
+use App\Companies;
 
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', '-1');
+
+/**
+ * Excel相关操作的工具类,需要时使用,与项目无关
+ * Class ExcelController
+ * @package App\Http\Controllers
+ */
 class ExcelController extends Controller
 {
     public function export_invest()
@@ -1710,7 +1723,7 @@ class ExcelController extends Controller
         $data_o = json_decode($o_data);
         $data = array();
         foreach ($data_o->data as $k => $v) {
-            if (($v->tel != "暂未收录" && ($v->address == "暂未收录")|| $v->address == "")) {
+            if (($v->tel != "暂未收录" && ($v->address == "暂未收录") || $v->address == "")) {
 
                 $sub_data = array($v->name, $v->tel, $v->address);
                 $data[] = $sub_data;
@@ -1732,4 +1745,175 @@ class ExcelController extends Controller
 
         })->export('xls');
     }
+
+    public function export_order()
+    {
+        $file = storage_path("app/doctor.xls");
+
+        Excel::load($file, function ($reader) {
+
+            $reader->each(function ($sheet) {
+                if ($sheet[3] != NULL && $sheet[3] != "姓名") {
+                    $arr = array();
+                    $arr["name"] = $sheet[3];
+                    $arr["hospital"] = $sheet[4];
+                    $arr["title"] = $sheet[6];
+                    $arr["aspect"] = $sheet[5];
+                    $arr["gender"] = $sheet[7];
+//                    $this->doctor_indb($arr);
+                }
+                $sheet->each(function ($row) {
+//                    var_dump($row);
+//                    if($row[3]!=NULL&& $row[3]!="姓名"){
+//                        $this->parase_log($row[3]);
+//                    }
+                });
+//                }
+                // Loop through all rows
+
+            });
+
+        });
+    }
+
+    public function my_dict()
+    {
+        Companies::chunk(200, function ($companys) {
+            foreach ($companys as $k => $v) {
+                if ($this->check_file('/usr/local/laravel/storage/app/entity_dict.txt', $v->name)) {
+                    continue;
+                }
+                $this->parase_log($v->name);
+            }
+
+        });
+    }
+
+    public function parase_log($pam = '')
+    {
+//        $fp = fopen("/usr/local/laravel/storage/app/order_num.txt", "a+"); //文件被清空后再写入
+        $fp = fopen("/usr/local/laravel/storage/app/entity_dict.txt", "a+"); //文件被清空后再写入
+        if ($fp) {
+            $flag = fwrite($fp, $pam . "\r\n");
+            if (!$flag) {
+                echo "写入文件失败<br>";
+            }
+        } else {
+            echo "打开文件失败";
+        }
+        fclose($fp);
+    }
+
+    /**
+     * 比对日志
+     * @param $file_cache 日志文件
+     * @param $file   待比对内容
+     * @return bool   返回值
+     */
+    function check_file($file_cache, $file)
+    {
+        if (file_exists($file_cache) && is_readable($file_cache)) {
+            $f = fopen($file_cache, "r");
+            while (!feof($f)) {
+                $line = fgets($f);
+                if (preg_replace("/(\s+)/", '', $line) == $file)
+                    return true;
+            }
+            return false;
+            fclose($f);
+        }
+    }
+
+    public function doctor_indb($arr)
+    {
+        if ($arr["name"] == "梁建宏") {
+            return false;
+        }
+        $person_doctor = new Founders();
+        $person_doctor->name = $arr["name"];
+        $person_doctor->workedCases = array([
+            "name" => $arr["hospital"],
+            "title" => $arr["title"],
+            "des" => $arr["aspect"],
+        ]);
+        $person_doctor->gender = $arr["gender"];
+        $person_doctor->tags = ["医生", "专家"];
+        $person_doctor->patent = [];
+        $person_doctor->projects = [];
+        $person_doctor->edu_background = [];
+        $person_doctor->founderCases = [];
+        $person_doctor->paper = [];
+        $person_doctor->des = "";
+        $person_doctor->s_position = "";
+        $person_doctor->mail = "";
+        $person_doctor->tel = "";
+        $person_doctor->avatar = "";
+        $person_doctor->__v = 0;
+        $tt = $person_doctor->save();
+//        dd($tt);
+    }
+
+    public function coreseek()
+    {
+
+        $sphinxClient = new \SphinxClient();
+
+        $sphinxClient->setServer('localhost', 9312);   // server = localhost,port = 9312.
+        $sphinxClient->setMatchMode(SPH_MATCH_EXTENDED2);
+        $sphinxClient->SetLimits(0, 100, 1000, 0);
+        $sphinxClient->setMaxQueryTime(5000);  // set search time 5  seconds.
+        $result = $sphinxClient->query("人工智能", 'news');
+        dd($result);
+        $ids = array();
+        foreach ($result['matches'] as $k => $v) {
+            $ids[] = $v["attrs"]["_id"];
+        }
+        $result_company = Companies::whereIn("_id", $ids)->get();
+
+        $opts = array(
+            'before_match' => '<b style="color:red">',
+            'after_match' => '</b>',
+        );
+        foreach ($result_company as $k => $v) {
+            if (isset($v->detail)) {
+                $S[] = $v->detail;
+                $r = $sphinxClient->BuildExcerpts($S, 'xml', '糖尿病', $opts);
+                $v->detail = $r[0];
+                var_dump($r);
+            }
+
+        }
+
+        dd($result_company);
+        if (isset($result['matches'])) {
+            dd($result['matches']);
+            $rel['time'] = $result['time'];
+            $rel['matches'] = $result['matches'];
+            return $rel;
+        } else {
+            $rel['time'] = $result['time'];
+            return $rel;
+        }
+    }
+
+    public function coreseek_xml()
+    {
+        $xml = new SphinxXmlpipe();
+        $xml->xmlpipe2();
+    }
+
+    public function export_person_list()
+    {
+        \DB::collection('founder_total')->chunk(200, function ($persons) {
+
+            foreach ($persons as $person) {
+//                dd($person);
+                $link = "https://www.crunchbase.com" . $person["_id"]["founderDetailLink"];
+//                dd($link);
+                $this->parase_log($link);
+            }
+
+        });
+    }
+
 }

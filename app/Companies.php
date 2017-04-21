@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moloquent;
+use Elasticquent\ElasticquentTrait;
 
 class Companies extends Moloquent
 {
     use SoftDeletes;
+    use ElasticquentTrait;
     /**
      * The attributes that should be mutated to dates.
      *
@@ -20,7 +22,17 @@ class Companies extends Moloquent
     public function founders()
     {
 //        return $this->hasOne('App\Founder','founder_id','_id');
-        return \App\Founders::find($this->founder_id);
+        $_id_array = [];
+        if (isset($this->members) && !empty($this->members)) {
+            foreach ($this->members as $key => $value) {
+                $id = isset($value["founder_id"]) ? $value["founder_id"] : [];
+                $_id_array[] = $id;
+            }
+            return \App\Founders::whereIn("_id", $_id_array)->get();
+        } else {
+            return [];
+        }
+
     }
 
 
@@ -38,6 +50,15 @@ class Companies extends Moloquent
             }
         }
         return $score;
+    }
+
+    function getIndexName()
+    {
+        return 'qisu';
+    }
+    function getTypeName()
+    {
+        return 'companies';
     }
 
 

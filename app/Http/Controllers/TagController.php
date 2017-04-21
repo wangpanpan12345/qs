@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Tags;
 use App\DailyNews;
 use App\Http\Requests;
+use App\Companies;
 use Illuminate\Http\Request;
 
 class TagController
@@ -50,7 +51,19 @@ class TagController
     public function tag_search(Request $r)
     {
         $k = $r["q"];
-        $s_n_r = Tags::where('name', 'like', '%' . $k . '%')->where("source", "=", "geekheal")->get()->take(10);
+        $s_n_r = Tags::where('name', 'like', '%' . $k . '%')->whereIn("source", ["geekheal", "jianxiu"])->get()->take(10);
+        $result = array(
+            "result" => $s_n_r,
+            "k" => $k,
+            "error" => 0,
+        );
+        return $result;
+    }
+
+    public function job_tags(Request $r)
+    {
+        $k = $r["q"];
+        $s_n_r = Tags::where('name', 'like', '%' . $k . '%')->get()->take(10);
         $result = array(
             "result" => $s_n_r,
             "k" => $k,
@@ -61,26 +74,59 @@ class TagController
 
     public function manage()
     {
-        $tags_geekheal = Tags::where("source", "=", "geekheal")->orderBy('group_id')->get();
+        $tags_geekheal = Tags::where("source", "geekheal")->orderBy('group_id')->get();
         $result = ["tags" => $tags_geekheal];
         return view("admin.addtag", $result);
     }
 
+    public function manage_p()
+    {
+        $tags_geekheal = Tags::where("source", "jianxiu")->orderBy('group_id')->get();
+        $result = ["tags" => $tags_geekheal];
+        return view("admin.addtag_p", $result);
+    }
+
+
     public function timeline($tag)
     {
-        $tt = Tags::where("name", "=", $tag)->where("source", "=", "geekheal")->first(["id"]);
+        $tt = Tags::where("name", "=", $tag)->whereIn("source", ["geekheal", "jianxiu"])->first();
         $tag_s = Tags::find($tt->id);
         $tag_a = [];
+        $knowledge_tag = Tags::where("group_id", "58a64882e9c0464f253233ec")->get();
         foreach ($tag_s->sub as $k => $v) {
-//            dd($v);
             $tag_a[] = $v["name"];
         }
         $tag_a[] = $tag;
-//        dd($tag_a);
         $timeline_tag = DailyNews::whereIn("tags", $tag_a)->orderBy("created_at", "desc")->get();
-//        dd($timeline_tag);
-        return view("timeline_tag", ["timeline" => $timeline_tag, "tag" => $tag]);
+        $_ids = [];
+        foreach ($timeline_tag as $k => $v) {
+            if (!empty($v["company"]) && $v["company"] != "") {
+                foreach ($v["company"] as $c => $i) {
+                    if($i["_id"]!=""){
+                        $_ids[] = $i["_id"];
+                    }
 
+                }
+            }
+        }
+        $_ids = array_unique($_ids);
+        $companys = Companies::whereIn("_id", $_ids)->get();
+        $result = [
+            "timeline" => $timeline_tag,
+            "tag" => $tt,
+            "knowledge_tag" => $knowledge_tag,
+            "knowledge" => $tt->knowledge()->get(),
+            "companys" => $companys
+        ];
+        return view("timeline_tag", $result);
+
+    }
+
+    public function package($tag, $pack)
+    {
+        $package = DailyNews::where("tags", $tag)->where("package", $pack)->get();
+        dd($package);
+        return $pack . $tag;
     }
 
 }

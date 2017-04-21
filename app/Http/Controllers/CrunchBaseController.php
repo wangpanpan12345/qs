@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 ini_set('max_execution_time', 0);
 use App\Companies;
+use App\Founders;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Http\Requests;
@@ -16,23 +17,49 @@ use Illuminate\Support\Facades\Storage;
 use Psy\Exception\ErrorException;
 use Illuminate\Database\Eloquent\Collection;
 use TijsVerkoyen\CssToInlineStyles\Exception;
+use MongoDB\BSON\UTCDateTime;
 
 
 class CrunchBaseController
 {
-    public $pachong_name = "crunch-detail";
+
+//    public $pachong_name = "crunch-detail";
+    public $pachong_name = "person_detail";
+//    public $pachong_name = "policy_expert";
+//    public $pachong_name = "gcyys";
+//    public $pachong_name = "health_care";
+//    public $pachong_name = "bio-list";
+//    public $pachong_name = "medical-device";
+//    public $pachong_name = "therapeutics";
+//    public $pachong_name = "pharmaceutical";
+//    public $pachong_name = "health-diagnostics";
+//    public $pachong_name = "hospital-crunch";
+//    public $pachong_name = "life-science";
+//    public $pachong_name = "neuroscience";
+//    public $pachong_name = "bioinformatics";
+//    public $pachong_name = "wellness";
+
+
     public function parase_starter()
     {
-        $files = scandir("/Users/wangpan/DataScraperWorks/".$this->pachong_name);
+
+        $files = scandir("/Users/wangpan/DataScraperWorks/" . $this->pachong_name);
 //        $files = scandir("/Users/wangpan/DataScraperWorks/crunch-detail");
 //        dd($files);
         foreach ($files as $k => $v) {
-            if (strpos($v, "crunch-detail") === false)
+            if (strpos($v, $this->pachong_name) === false)
                 continue;
-            if ($this->check_file('/usr/local/laravel/storage/app/parase_log.txt', '/Users/wangpan/DataScraperWorks/crunch-detail/' . $v))
+//            if ($this->check_file('/usr/local/laravel/storage/app/parase_log.txt', '/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v))
+            if ($this->check_file('/usr/local/laravel/storage/app/parase_person.txt', '/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v))
+
 //            if ($this->check_file('/usr/local/laravel/storage/app/tag_fix.txt', '/Users/wangpan/DataScraperWorks/'.$this->pachong_name.'/' . $v))
                 continue;
-            $this->paraser_crunchbase_detail('/Users/wangpan/DataScraperWorks/'.$this->pachong_name.'/' . $v);
+//            dd('/Users/wangpan/DataScraperWorks/'.$this->pachong_name.'/' . $v);
+//            $this->paraser_crunchbase_detail('/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v);
+//            $this->paraser_expert_detail('/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v);
+//            $this->parase_crunch_list('/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v);
+            $this->parase_person_detail('/Users/wangpan/DataScraperWorks/' . $this->pachong_name . '/' . $v);
+
         }
     }
 
@@ -59,7 +86,7 @@ class CrunchBaseController
          * overview
          */
         $overview = $doc->getElementsByTagName("overview");
-        $name = $overview->item(0)->getElementsByTagName("name")->item(0)->nodeValue;
+        $c_name = $overview->item(0)->getElementsByTagName("name")->item(0)->nodeValue;
         $founded = $overview->item(0)->getElementsByTagName("founded")->item(0)->nodeValue;
 
         $avatar_company = $overview->item(0)->getElementsByTagName("avatar")->item(0)->nodeValue;
@@ -93,7 +120,7 @@ class CrunchBaseController
 //        $contact = explode('|', $contact);
 
         $headquarters = $overview->item(0)->getElementsByTagName("headquarters")->item(0)->nodeValue;
-        $item['name'] = trim($name);
+        $item['name'] = trim($c_name);
         $item['time'] = $founded;
         $item['founder'] = $founders;
         $item['scale'] = trim($scale);
@@ -104,7 +131,16 @@ class CrunchBaseController
         $item['location'] = $headquarters;
         $item['detail'] = $detail;
         $item['offices'] = array();
-//        $item['avatar'] = $avatar_company;
+        $item['avatar'] = $avatar_company;
+
+//        dd($path);
+
+        $company = Companies::where('cpyDetailLink', trim($path))->orWhere("name", $c_name)->get();
+//        dd($company);
+        if (count($company) > 0) {
+//            dd($company);
+            dd($file);
+        }
 
         /**
          * funds
@@ -180,7 +216,28 @@ class CrunchBaseController
                 $team_array['avatar'] = trim(preg_replace("/(\s+)/", ' ', $avatar));
                 $team_array['title'] = $title;
                 $team_array['detailLink'] = $name_url;
-                $teams_array[] = $team_array;
+
+
+                $insertArray = array();
+                $person = new Founders();
+                $insertArray["name"] = $name;
+//                $insertArray["des"] = trim($des);
+                $insertArray["founderDetailLink"] = $name_url;
+                $insertArray["avatar"] = $avatar;
+                $insertArray["workedCases"] = [["title" => $title, "name" => $c_name, "time" => ""]];
+                $insertArray["created_at"] = new UTCDateTime(round(microtime(true) * 1000));
+                $insertArray["updated_at"] = new UTCDateTime(round(microtime(true) * 1000));
+//                $id = 1;
+                $id = $person->insertGetId($insertArray);
+//                $person->save();
+                $teams_array[] = [
+                    "founder_id" => $id,
+                    "title" => $title,
+                    "avatar" => $avatar,
+                    "name" => $name,
+                    "detailLink" => $name_url
+                ];
+//                $teams_array[] = $team_array;
             }
         }
         $item['members'] = $teams_array;
@@ -253,10 +310,13 @@ class CrunchBaseController
                 $amount = $v->getElementsByTagName('amount')->item(0)->nodeValue;
                 $round = $v->getElementsByTagName('round')->item(0)->nodeValue;
                 $name_url = $v->getElementsByTagName('name-url')->item(0)->nodeValue;
+                $amount_1 = trim(explode("/", $amount)[0]);
+
                 $invest_array['date'] = $date;
                 $invest_array['name'] = $name;
-                $invest_array['amount'] = preg_replace("/(\s+)/", ' ', $amount);
-                $invest_array['amount'] = trim(explode("/", $amount)[0]);
+
+                $invest_array['amount'] = $amount_1;
+                $invest_array['amount_o'] = $amount_1;
                 $invest_array['round'] = preg_replace("/(\s+)/", ' ', $round);
                 $invests_array[] = $invest_array;
             }
@@ -267,12 +327,49 @@ class CrunchBaseController
 //        save();
 //        var_dump($file);
 //        $status = true;
-        $company = Companies::where('cpyDetailLink', '=', trim($path))->get()[0];
-//        dd($path);
+//        dd($name);
+
+//       dd($company);
+//        if (count($company) > 0) {
+//            dd($path);
+//            $company = $company[0];
+//            $company->scale = $scale;
+//            $company->website = $site;
+//            $company->avatar = $avatar_company;
+////        $item['name'] = trim($name);
+//            $company->time = $founded;
+//            $company->founder = $founders;
+//            $company->tags = $_category;
+//            $company->des = $description;
+//            $company->contactInfo = $contact;
+//            $company->location = $headquarters;
+//            $company->detail = $detail;
+//            $company->offices = array();
+//            $company->raiseFunds = $funds_array;
+//            $company->acquisitions = $acquisitions_array;
+//            $company->investments = $invests_array;
+//            $company->products = $products_array;
+//            $company->news = $news_array;
+//            $company->members = $teams_array;
+//            if ($item['name'] == "") {
+//                $this->parase_log($file, "error");
+//            } else {
+//                $status = $company->save();
+//                if ($status) {
+//                    $this->parase_log($file, "info");
+//                    echo $file . "&nbsp;&nbsp;&nbsp;&nbsp success in db.</br>";
+////                dd($company);
+//                } else {
+//                    $this->parase_log($file, "error");
+//                }
+//            }
+//        } else {
+        $company = new Companies();
         $company->scale = $scale;
         $company->website = $site;
+        $company->cpyDetailLink = $path;
         $company->avatar = $avatar_company;
-//        $item['name'] = trim($name);
+        $company->name = trim($c_name);
         $company->time = $founded;
         $company->founder = $founders;
         $company->tags = $_category;
@@ -287,6 +384,8 @@ class CrunchBaseController
         $company->products = $products_array;
         $company->news = $news_array;
         $company->members = $teams_array;
+        $company->referer = "crunchbase";
+//        dd($company);
         if ($item['name'] == "") {
             $this->parase_log($file, "error");
         } else {
@@ -299,6 +398,9 @@ class CrunchBaseController
                 $this->parase_log($file, "error");
             }
         }
+//        dd($c_name);
+
+//        }
 
 
 //        var_dump($status);
@@ -307,6 +409,289 @@ class CrunchBaseController
 
 //        dd($company);
     }
+
+    /**
+     * 解析并入库从crunchbase抓取到的人的信息
+     * @param string $file
+     */
+    public function  parase_person_detail($file = "")
+    {
+//        dd($file);
+        $doc = new \DOMDocument();
+        try {
+            $doc->load($file);
+        } catch (ErrorException $e) {
+            echo 'Message: ' . $e->getMessage();
+        }
+        $path = $doc->getElementsByTagName("fullpath")->item(0)->nodeValue;
+
+        $item = array();
+        /**
+         * overview
+         */
+        $info = $doc->getElementsByTagName("info");
+        $detail = "";
+        if ($info->item(0)->getElementsByTagName("item")->item(0)->getElementsByTagName("datail")->length != 0)
+            $detail = $info->item(0)->getElementsByTagName("item")->item(0)
+                ->getElementsByTagName("datail")->item(0)->nodeValue;
+
+        $item["des"] = preg_replace("/(\n)/","<br/>",$detail);
+//        dd($item["des"]);
+        /**
+         * edu
+         */
+        $edus = $doc->getElementsByTagName("edu");
+        $edus_array = array();
+        if ($edus->item(0)->getElementsByTagName("item")->length != 0) {
+            $edu = $edus->item(0)->getElementsByTagName("item")->item(0)
+                ->getElementsByTagName('edu_e')->item(0)->getElementsByTagName('item');
+            foreach ($edu as $k => $v) {
+                $edu_array = array();
+                $school = $v->getElementsByTagName('school')->item(0)->nodeValue;
+                $major = $v->getElementsByTagName('major')->item(0)->nodeValue;
+                $avatar = $v->getElementsByTagName('avatar')->item(0)->nodeValue;
+                $edu_array['name'] = $school;
+                $edu_array['major'] = $major;
+                $edu_array['e_avatar'] = $avatar;
+                $edus_array[] = $edu_array;
+            }
+        }
+        $item['edu_background'] = $edus_array;
+        /**
+         * jobs
+         */
+        $jobs = $doc->getElementsByTagName("jobs");
+        $jobs_array = array();
+        if ($jobs->item(0)->getElementsByTagName("item")->length != 0) {
+            $job = $jobs->item(0)->getElementsByTagName("item")->item(0)
+                ->getElementsByTagName('job_e')->item(0)->getElementsByTagName('item');
+            foreach ($job as $k => $v) {
+                $job_array = array();
+                $company = $v->getElementsByTagName('company')->item(0)->nodeValue;
+                $title = $v->getElementsByTagName('title')->item(0)->nodeValue;
+                $avatar = $v->getElementsByTagName('avatar')->item(0)->nodeValue;
+                $job_array['name'] = $company;
+                $job_array['title'] = $title;
+                $job_array['c_avatar'] = $avatar;
+                $job_array['time'] = "";
+                if ($company !== "")
+                    $jobs_array[] = $job_array;
+
+            }
+        }
+        $item['workedCases'] = $jobs_array;
+        $ps = pathinfo($path);
+        $pname = "/person/" . $ps["filename"];
+//        dd($item);
+        $person = Founders::where("founderDetailLink", $pname)->get();
+        if (count($person) == 1) {
+//            dd($person);
+            $person = $person[0];
+            $person->des = $item["des"];
+            $person->workedCases = $item['workedCases'];
+            $person->edu_background = $item['edu_background'];
+            $status = $person->save();
+            if ($status) {
+                $this->parase_log($file, "info");
+                echo $file . "&nbsp;&nbsp;&nbsp;&nbsp success in db.</br>";
+//                dd($company);
+            } else {
+                $this->parase_log($file, "error");
+            }
+        }else{
+            $person = $person[0];
+            $person->des = $item["des"];
+            $person->workedCases = $item['workedCases'];
+            $person->edu_background = $item['edu_background'];
+            $status = $person->save();
+            if ($status) {
+                $this->parase_log($file, "info");
+                echo $file . "&nbsp;&nbsp;&nbsp;&nbsp success in db.</br>";
+//                dd($company);
+            } else {
+                $this->parase_log($file, "error");
+            }
+//            dd($person);
+        }
+//        dd($item, $pname);
+
+    }
+
+    public function parase_crunch_list($file = "")
+    {
+        $doc = new \DOMDocument();
+        try {
+            $doc->load($file);
+        } catch (ErrorException $e) {
+            echo 'Message: ' . $e->getMessage();
+        }
+        /**
+         * overview
+         */
+        $overview = $doc->getElementsByTagName("wellness")->item(0)->getElementsByTagName("item");
+        foreach ($overview as $k => $v) {
+            $link = $v->getElementsByTagName("name-url")->item(0)->nodeValue;
+            $link_f = "https://www.crunchbase.com" . $link;
+            $company = Companies::where('cpyDetailLink', trim($link_f))->count();
+            if ($company == 0 && !$this->check_file('/usr/local/laravel/storage/app/parase_log.txt', trim($link_f))) {
+                $this->parase_log($link_f);
+            }
+//            dd($link);
+        }
+
+    }
+
+    /**
+     * 解析抓取到的crunchbase详情页的xml文件,并将其存入MongoDB数据库
+     * @param string $file 文件名
+     */
+    public function paraser_expert_detail($file = "")
+    {
+
+//        dd($file);
+//        $file = '/usr/local/laravel/storage/app/policy_expert_312866339_2877708628.xml';
+
+        $doc = new \DOMDocument();
+        try {
+            $doc->load($file);
+        } catch (ErrorException $e) {
+            echo 'Message: ' . $e->getMessage();
+        }
+        $path = $doc->getElementsByTagName("fullpath")->item(0)->nodeValue;
+
+        $item = array();
+        /**
+         * overview
+         */
+        $overview = $doc->getElementsByTagName("detail");
+        $name = $overview->item(0)->getElementsByTagName("name")->item(0)->nodeValue;
+        $email = $overview->item(0)->getElementsByTagName("email")->item(0)->nodeValue;
+        $s_position = $overview->item(0)->getElementsByTagName("s_position")->item(0)->nodeValue;
+        $s_position = preg_replace("/(\s+)/", '', $s_position);
+        $des = $overview->item(0)->getElementsByTagName("aspect")->item(0)->nodeValue;
+        $des = preg_replace("/(\s+)/", '', $des);
+        $edu = $overview->item(0)->getElementsByTagName("edu")->item(0)->nodeValue;
+        $edu = nl2br($edu);//将分行符"\r\n"转义成HTML的换行符"<br/>"
+        $edu = explode("<br />", $edu);//"<br />"作为分隔切成数组
+        $edu = preg_replace("/(\s+)/", '', $edu);
+        $edu = array_unique($edu);
+        foreach ($edu as $k => $v) {
+            if (strlen($v) < 9) {
+                unset($edu[$k]);
+            } else {
+                $edu[$k] = substr($v, 1);
+                $edu[$k] = preg_replace('/(\d)|(\.)|(\-)/i', '', $edu[$k]);
+                $edu_tmp = explode(";", $edu[$k]);
+                $edu[$k] = ["name" => $edu_tmp[0], "major" => isset($edu_tmp[1]) ? "$edu_tmp[1]" : ""];
+            }
+
+        }
+
+        $paper = $overview->item(0)->getElementsByTagName("paper")->item(0)->nodeValue;
+        $paper = nl2br($paper);//将分行符"\r\n"转义成HTML的换行符"<br/>"
+        $paper = explode("<br />", $paper);//"<br />"作为分隔切成数组
+        $paper = preg_replace("/(\s+)/", '', $paper);
+        $paper = array_unique($paper);
+        foreach ($paper as $k => $v) {
+            if (strlen($v) < 12) {
+                unset($paper[$k]);
+            } else {
+                $paper[$k] = ["name" => $v];
+            }
+        }
+
+        $project = $overview->item(0)->getElementsByTagName("project")->item(0)->nodeValue;
+        $project = nl2br($project);//将分行符"\r\n"转义成HTML的换行符"<br/>"
+        $project = explode("<br />", $project);//"<br />"作为分隔切成数组
+        $project = preg_replace("/(\s+)/", '', $project);
+        $project = array_unique($project);
+        foreach ($project as $k => $v) {
+            if (strlen($v) < 12) {
+                unset($project[$k]);
+            } else {
+                $project[$k] = ["name" => substr($v, 1)];
+            }
+
+        }
+
+        $work = $overview->item(0)->getElementsByTagName("work")->item(0)->nodeValue;
+        $work = nl2br($work);//将分行符"\r\n"转义成HTML的换行符"<br/>"
+        $work = explode("<br />", $work);//"<br />"作为分隔切成数组
+        $work = preg_replace("/(\s+)/", '', $work);
+        $work = array_unique($work);
+        foreach ($work as $k => $v) {
+            if (strlen($v) < 12) {
+                unset($work[$k]);
+            } else {
+                $work[$k] = substr($v, 1);
+                preg_match_all('/(\d+\.\d+)(\-\d+\.\d+)?/i', $work[$k], $result);
+                $wenzi = preg_replace('/(\d)|(\-)/i', '', $work[$k]);
+                $title = $wenzi;
+                $work[$k] = explode(".", $title);
+                $index = 1;
+                foreach ($work[$k] as $a => $b) {
+                    if ($b == "") {
+                        unset($work[$k][$a]);
+                    } else {
+                        if ($index == 1) {
+                            $work[$k]["name"] = $b;
+                            unset($work[$k][$a]);
+                        } elseif ($index == 2) {
+                            $work[$k]["title"] = $b;
+                            unset($work[$k][$a]);
+                        } else {
+
+                        }
+                        $index++;
+                    }
+
+                }
+                if (isset($result[0][0])) {
+                    $work[$k]["time"] = $result[0][0];
+//                    array_push($work[$k], $result[0][0]);
+                }
+
+            }
+
+        }
+        $item["founderDetailLink"] = $path;
+        $item["__v"] = 0;
+        $item["avatar"] = "";
+        $item["name"] = $name;
+        $item["email"] = $email;
+        $item["s_position"] = $s_position;
+        $item["des"] = $des;
+        $item["edu"] = array_values($edu);
+        $item["paper"] = array_values($paper);
+        $item["project"] = array_values($project);
+        $item["work"] = array_values($work);
+        $item["tags"] = ["专家"];
+        $Founders = Founders::where('founderDetailLink', '=', $path)->get();
+        if ($Founders->count() == 0) {
+//            echo $file;
+//            dd($item);
+            $person = new Founders();
+            $person->name = $name;
+            $person->__v = 0;
+            $person->founderDetailLink = $path;
+            $person->avatar = "";
+            $person->des = "关注方向:" . $des;
+            $person->s_position = $s_position;
+            $person->mail = $email;
+            $person->tel = "";
+            $person->tags = ["专家"];
+            $person->paper = array_values($paper);;
+            $person->projects = array_values($project);
+            $person->edu_background = array_values($edu);
+            $person->workedCases = array_values($work);
+            $person->founderCases = [];
+            $person->patent = [];
+            $person->save();
+//        dd($item);
+            echo $name . "</br></br>";
+        }
+    }
+
 
     /**
      * 格式化融资日期
@@ -446,8 +831,10 @@ class CrunchBaseController
     {
         if ($level == "error") {
             $fp = fopen("/usr/local/laravel/storage/app/parase_error.txt", "a+"); //文件被清空后再写入
+//            $fp = fopen("/usr/local/laravel/storage/app/parase_person.txt", "a+");
         } else {
-            $fp = fopen("/usr/local/laravel/storage/app/parase_log.txt", "a+"); //文件被清空后再写入
+            $fp = fopen("/usr/local/laravel/storage/app/parase_person.txt", "a+");
+//            $fp = fopen("/usr/local/laravel/storage/app/parase_log.txt", "a+"); //文件被清空后再写入
 //            $fp = fopen("/usr/local/laravel/storage/app/tag_fix.txt", "a+"); //文件被清空后再写入
 
         }

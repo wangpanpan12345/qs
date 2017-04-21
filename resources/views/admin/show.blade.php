@@ -67,17 +67,20 @@
         vertical-align: middle;
         top: 50%;
     }
-    @media (max-width: 748px){
-        .wap_des{
+
+    @media (max-width: 748px) {
+        .wap_des {
             display: block;
             width: 100%;
             text-align: justify;
             margin: 0 auto;
         }
-        .wap_title{
+
+        .wap_title {
             width: 60%;
         }
-        .wap_score{
+
+        .wap_score {
             width: 100%;
             margin: 0 auto;
             text-align: right;
@@ -85,10 +88,9 @@
     }
 </style>
 @section('content')
-    {{--<h2>奇速公司数据列表</h2>--}}
-    {{--        {{dd($cs)}}--}}
-    @foreach($cs->items() as $K => $V)
+    @if(isset($tag))<h4>查询到{{$tag}}类公司共有{{$cs->total()}}个</h4>@endif
 
+    @foreach($cs->items() as $K => $V)
         <div class="list">
             <span class="avatar"><img src="{{$V["avatar"] or ""}}" width="50px" height="50px"/></span>
 
@@ -99,7 +101,7 @@
             <div class="wap_des">
                 <span class="des">{{$V["des"]}}</span>
             </div>
-            <?php $width = isset($V["complete_score"])?$V["complete_score"]:0 ?>
+            <?php $width = isset($V["complete_score"]) ? $V["complete_score"] : 0 ?>
             @if((int)$width>80 || (int)$width==80)
                 <?php $color = '#3AC815' ?>
             @elseif((int)$width>60 || (int)$width==60)
@@ -115,7 +117,5 @@
             </div>
         </div>
     @endforeach
-    {{--<a href="{{$cs->previousPageUrl()}}">前一页</a>--}}
-    {{--<a href="{{$cs->nextPageUrl()}}">后一页</a>--}}
     {{$cs->links()}}
 @endsection

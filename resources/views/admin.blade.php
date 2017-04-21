@@ -5,6 +5,7 @@
     <title>奇速 - @yield('title')</title>
     {{--<link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" rel="stylesheet">--}}
     <link href="/css/app.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="https://oi7gusker.qnssl.com/qisu/logo/%20qisu%20logo-02.png">
     <style>
         @media (max-width: 748px){
 
@@ -36,13 +37,16 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                     <li><a href="/qs-admin/show">CompanyList</a></li>
-                    <li><a href="/dailynews">DailyNews</a></li>
+                    <li><a href="/dailynews">DailyNews(T)</a></li>
+                    <li><a href="/dailynews_p">DailyNews(P)</a></li>
+                    <li><a href="/qs-admin/keynews">Highlight</a></li>
                     <li><a href="/dailyfunds">DailyFunds</a></li>
-                    <li><a href="/qs-admin/tag/manage">Tags</a></li>
+                    <li><a href="/qs-admin/tag/manage">Tags(T)</a></li>
+                    <li><a href="/qs-admin/tag/manage_p">Tags(P)</a></li>
 
                     <li class="mobile_search">
                         <form style="position: relative;top: 10px;" method="POST" action="/qs-admin/search">
-                            <input type="text" name="k" id="k" placeholder="search company"/>
+                            <input type="text" name="k" id="k" placeholder="search "/>
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         </form>
                     </li>
@@ -67,6 +71,9 @@
                                        onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
                                         Logout
+                                    </a>
+                                    <a href="{{ url('/qs-admin/profile') }}">
+                                        个人主页
                                     </a>
 
                                     <form id="logout-form" action="{{ url('/logout') }}" method="POST"
@@ -103,12 +110,25 @@
 </div>
 </body>
 <script>
-    $(function(){
-        $(".navbar-toggle").click(function(){
+//    $(function(){
+//        $(".navbar-toggle").click(function(){
 //            $("#app-navbar-collapse").removeClass("collapse");
-            $("#app-navbar-collapse").toggle();
-        })
-    })
+//            $("#app-navbar-collapse").toggle();
+//        })
+//    })
 </script>
-{{--<script src="/js/app.js"></script>--}}
+
+<script type="text/javascript" src="https://qs.geekheal.net:6001/socket.io/socket.io.js"></script>
+<script src="/js/app.js"></script>
+<script>
+    window.Echo.channel('dailynews.edit.1')
+            .listen('EditNotify', function (data) {
+                $("[data-id=" + data._id + "]").children(".labels")[0].innerHTML = "<label class='latest'>Someone is Editing</label>";
+            });
+    window.Echo.channel('dailynews.pub.1')
+            .listen('PubState', function (data) {
+                $("[data-id=" + data._id + "]").children(".labels")[0].innerHTML = "<label class='latest'>已发布</label>";
+            });
+
+</script>
 </html>

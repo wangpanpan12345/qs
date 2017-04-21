@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="links">
-                    {{--<a href="/qs-admin">Admin</a>--}}
+                    <a href="/qs-admin">关注创新医疗</a>
                     {{--<a href="https://laravel.com/docs">Documentation</a>--}}
                     {{--<a href="https://laracasts.com">Laracasts</a>--}}
                     {{--<a href="https://laravel-news.com">News</a>--}}

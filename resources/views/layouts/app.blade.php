@@ -83,8 +83,8 @@
     @yield('content')
 </div>
 
-
 <!-- Scripts -->
+<script type="text/javascript" src="https://qs.geekheal.net:6001/socket.io/socket.io.js"></script>
 <script src="/js/app.js"></script>
 </body>
 </html>

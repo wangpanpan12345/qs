@@ -3,10 +3,12 @@
 namespace App;
 
 use Moloquent;
-
+use Elasticquent\ElasticquentTrait;
 class Founders extends Moloquent
 {
+    use ElasticquentTrait;
     //
+    protected $dates = ['deleted_at',"created_at','updated_at"];
     protected $collection = 'founders';
 
     public function company()

@@ -2,12 +2,15 @@
 
 namespace App;
 
+use App\Lib\Fix;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moloquent;
-
+use Elasticquent\ElasticquentTrait;
 class DailyNews extends Moloquent
 {
+
     //
+    use ElasticquentTrait;
     use SoftDeletes;
     /**
      * The attributes that should be mutated to dates.
@@ -32,7 +35,8 @@ class DailyNews extends Moloquent
         "flag",
         "user_id",
         "priority",
-        "person"
+        "person",
+        "group"
     ];
     protected $collection = 'dailynews';
 
@@ -40,12 +44,28 @@ class DailyNews extends Moloquent
     {
         return $this->hasOne('App\User', '_id', 'user_id');
     }
+
     public function companies()
     {
-        return $this->hasOne('App\Companies', 'name', 'company');
-//        return $this->hasMany('App\Companies','company', 'name');
-//        return $this->hasMany('App\Companies', 'company', 'name');
-//        return $this->hasMany('App\Companies', 'name', 'company');
+        $_id_array = [];
+        if (isset($this->company) && !empty($this->company)) {
+            foreach ($this->company as $key => $value) {
+                if(isset($value["_id"])&&$value["_id"]!=""){
+                    $_id_array[] = $value["_id"];
+                }
+
+            }
+            $r = \App\Companies::whereIn("_id", $_id_array)->get();
+//            dd($r->toArray());
+            return $r;
+        } else {
+            return [];
+        }
+//        return $this->hasOne('App\Companies', 'name', 'company');
+    }
+    function getIndexName()
+    {
+        return 'qisu';
     }
 
 }

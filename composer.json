@@ -11,7 +11,10 @@
         "maatwebsite/excel": "~2.1.0",
         "jonnyw/php-phantomjs": "4.*",
         "simple-html-dom/simple-html-dom": "^1.5",
-        "vinelab/rss": "^1.0"
+        "vinelab/rss": "^1.0",
+        "predis/predis": "^1.1",
+	"yuanchao/laravel-5-markdown-editor": "dev-master",
+	"elasticquent/elasticquent": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

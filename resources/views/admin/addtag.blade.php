@@ -20,13 +20,47 @@
         margin: 0;
     }
 
+    .border_container {
+        width: 3%;
+        border: 1px solid #0299f8;
+
+    }
+
+    .item_container {
+        width: 60%;
+        display: inline-block;
+        top: 50%;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    .ok_container {
+        width: 35%;
+        display: inline-block;
+        position: relative;
+        vertical-align: middle;
+        top: 50%;
+    }
+
     .tag_container {
-        border: 1px solid #e2e2e2;
+        background: #eceff0;
+        border: 1px solid #dddfe2;
         padding: 20px;
+        margin-bottom: 50px;
+        margin-top: 10px;
+
+    }
+    .tag_add{
+        border-left-width:10px;
+        border-left-color: #0299f8;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
     }
 
     .tag_container label {
         width: 100px;
+        text-align: right;
+        color: #000;
     }
 
     .tag_container input {
@@ -35,6 +69,8 @@
 
     .item {
         margin-bottom: 10px;
+        width: 45%;
+        display: inline-block;
     }
 
     .add_ok {
@@ -68,16 +104,14 @@
         cursor: pointer;
     }
 
-    /*.first_tag[group_id="585e27e7e9c0460445718d63"]{*/
-    /*display: inline-block;*/
-    /*}*/
-    /*.first_tag[group_id="585e27e7e9c0460445718d63"] p{*/
-    /*display: inline-block;*/
-    /*margin: 10px 15px;*/
-    /*padding: 2px 8px;*/
-    /*border: 2px solid #2a88bd;*/
-    /*cursor: pointer;*/
-    /*}*/
+    .ok_container input {
+        width: 100%;
+        background: #fff;
+        border: 2px solid #89cafc;
+        color: #89cafc;
+        border-radius: 2px;
+    }
+
     .first_tag p {
         border-bottom: 2px solid #000000;
         padding: 10px 0;
@@ -90,54 +124,90 @@
 
     .second_tag span {
         display: inline-block;
-        margin: 10px 15px;
+        margin: 10px 10px;
         padding: 2px 8px;
-        border: 2px solid #2a88bd;
+        height: 35px;
+        line-height: 35px;
+        min-width: 100px;
+        text-align: center;
         cursor: pointer;
+        font-size: 14px;
+    }
+    /*.third_tag:after{*/
+        /*border: 10px solid transparent;*/
+        /*border-left: 10px solid #f00;*/
+        /*width: 0;*/
+        /*height: 0;*/
+        /*position: absolute;*/
+        /*content: ' '*/
+    /*}*/
+    .tag{
+        border-radius: 2px;
     }
 
     .third_tag {
-        margin: 10px 15px;
-        border: 2px solid #fe4b55 !important;
+        display: inline-block;
     }
-    .fourth_tag{
+
+    .fourth_tag {
         margin: 10px 15px;
-        border: 2px solid #006633 !important;
+        background:#89cafc;
+        height: 30px!important;
+        line-height: 30px!important;
+        color: #fff;
+    }
+    .s_first_label{
+        font-size: 18px;
+        font-weight: 500;
+        color: #0299f8;
+    }
+    .second_tag_label{
+        color: #fff;
+        background:#0299f8;
+    }
+    .third_tag_label{
+        color: #fff;
+        background:#48b3f6;
     }
 
 
 </style>
 @section('content')
 
-    <div class="tag_container">
-        <div class="item">
-            <label>标签名:</label>
-            <input type="text" name="name" id="name"/>
-        </div>
-        <div class="item">
-            <label>所属标签:</label>
-            <input type="text" name="group_id" id="group_id" value="0" placeholder="一级标签填0" id="group_id"/>
+    <div class="tag_container tag_add">
+        {{--<div class="border_container"></div>--}}
+        <div class="item_container">
+            <div class="item">
+                <label>标签名</label>
+                <input type="text" name="name" id="name"/>
+            </div>
+            <div class="item">
+                <label>所属标签</label>
+                <input type="text" name="group_id" id="group_id" value="0" placeholder="一级标签填0" id="group_id"/>
 
-            <div class="tag_search_out">
-                <ul>
+                <div class="tag_search_out">
+                    <ul>
 
-                </ul>
+                    </ul>
+                </div>
+            </div>
+            <div class="item">
+                <label>标签别名</label>
+                <input type="text" name="alias" id="alias" placeholder="建议起个英文名"/>
+            </div>
+            <div class="item">
+                <label>来源</label>
+                <input type="text" name="source" id="source" value="geekheal" disabled/>
             </div>
         </div>
-        <div class="item">
-            <label>标签别名:</label>
-            <input type="text" name="alias" id="alias" placeholder="建议起个英文名"/>
-        </div>
-        <div class="item">
-            <label>来源:</label>
-            <input type="text" name="source" id="source" value="geekheal" disabled/>
-        </div>
-        <div class="item">
-            <input class="add_ok" type="submit" name="submit" value="确认添加"/>
+        <div class="ok_container">
+            <div class="item">
+                <input class="add_ok" type="submit" name="submit" value="确认添加"/>
+            </div>
         </div>
 
     </div>
-    <div class="tag_container">
+
         <?php
         $array_first = [];
         $array_second = [];
@@ -156,8 +226,10 @@
                 <?php
                 $array_first[$V->group_id][] = $V->name;
                 ?>
-                <div class="first_tag tag" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
-                    <p>{{$V->name}}</p></div>
+                <span class="s_first_label tag">{{$V->name}}</span>
+                <div class="first_tag tag tag_container" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
+
+                </div>
                 <?php
                 $array_second[] = $V->_id;
                 unset($tags[$K]);
@@ -168,7 +240,7 @@
                 ?>
                 <script>
                     $(function () {
-                        var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span><?php echo $V->name; ?></span></div>'
+                        var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span></div>'
                         $("#<?php echo $V->group_id; ?>").append(html);
                     })
                 </script>
@@ -182,7 +254,7 @@
                 ?>
                 <script>
                     $(function () {
-                        var html = '<span class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><?php echo $V->name; ?></span>'
+                        var html = '<div class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="third_tag_label tag"><?php echo $V->name; ?></span></div>'
                         $("#<?php echo $V->group_id; ?>").append(html);
                     })
                 </script>
@@ -221,8 +293,10 @@
                     <?php
                     $array_first[$V->group_id][] = $V->name;
                     ?>
-                    <div class="first_tag tag" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
-                        <p>{{$V->name}}</p></div>
+                    <span class="s_first_label tag">{{$V->name}}</span>
+                    <div class="first_tag tag tag_container" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
+
+                    </div>
                     <?php
                     $array_second[] = $V->_id;
                     unset($tags[$K]);
@@ -233,7 +307,7 @@
                     ?>
                     <script>
                         $(function () {
-                            var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span><?php echo $V->name; ?></span></div>'
+                            var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span></div>'
                             $("#<?php echo $V->group_id; ?>").append(html);
                         })
                     </script>
@@ -247,11 +321,26 @@
                     ?>
                     <script>
                         $(function () {
-                            var html = '<span class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><?php echo $V->name; ?></span>'
+                            var html = '<div class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="third_tag_label tag"><?php echo $V->name; ?></span></div>'
                             $("#<?php echo $V->group_id; ?>").append(html);
                         })
                     </script>
                     <?php
+                    $array_fourth[] = $V->_id;
+                    unset($tags[$K]);
+                    ?>
+                @elseif(in_array($V->group_id,$array_fourth))
+                    <?php
+                    $array_fourth[$V->group_id][] = $V->name;
+                    ?>
+                    <script>
+                        $(function () {
+                            var html = '<span class="fourth_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><?php echo $V->name; ?></span>'
+                            $("#<?php echo $V->group_id; ?>").append(html);
+                        })
+                    </script>
+                    <?php
+                    $array_fourth[] = $V->_id;
                     unset($tags[$K]);
                     ?>
                 @endif
@@ -262,7 +351,7 @@
         @endwhile
         {{--        {{var_dump($tags->count())}}--}}
         {{--{{dd($array_third)}}--}}
-    </div>
+
 
     <script>
         $(function () {
@@ -297,7 +386,10 @@
             $(".add_ok").click(function () {
                 var param = {};
                 param.name = $("#name").val();
-
+                if(param.name == ""){
+                    alert("标签名不为空!");
+                    return false;
+                }
                 param.group_id = $("#group_id").attr("_id");
                 if (param.group_id == null || typeof(param.group_id) == "undefined") {
                     param.group_id = 0;
@@ -312,14 +404,14 @@
             $(".tag").dblclick(function () {
                 alert("edit the tag");
             });
-            $(".second_tag span").click(function () {
-                var tag = $(this).text();
-                window.location.href = "/timeline/tag/" + tag;
-            });
+//            $(".second_tag span").click(function () {
+//                var tag = $(this).text();
+//                window.location.href = "/timeline/tag/" + tag;
+//            });
 
 
             $("span.tag").click(function () {
-                var tag = $(this).attr("data-tag");
+                var tag = $(this).text();
                 window.location.href = "/timeline/tag/" + tag;
             });
 

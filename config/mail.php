@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => 'qi.summit@geekheal.com',
-        'name' => 'qi.summit',
+        'name' => 'Qisu',
     ],
 
     /*

@@ -7,7 +7,7 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = require('jquery');
+//window.$ = window.jQuery = require('jquery');
 require('bootstrap-sass');
 
 /**
@@ -43,3 +43,27 @@ Vue.http.interceptors.push((request, next) => {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+import Echo from "laravel-echo"
+
+window.Echo = new Echo({
+    broadcaster: 'socket.io',
+    host: 'https://qs.geekheal.net:6001',
+});
+window.Echo.channel('dailynew.static.1')
+    .listen('DailyNewsUpdate', function (data) {
+        showNotice();
+        function showNotice() {
+            Notification.requestPermission(function (perm) {
+                if (perm == "granted") {
+                    var notification = new Notification("每日新闻通知:", {
+                        dir: "auto",
+                        lang: "hi",
+                        tag: "testTag",
+                        icon: "http://7xpx9u.com1.z0.glb.clouddn.com/qisu/logo/%20qisu%20logo-02.png",
+                        body: "过去一小时更新了"+data.static+"个新闻,请注意查看"
+                    });
+                }
+            })
+        }
+    });
+

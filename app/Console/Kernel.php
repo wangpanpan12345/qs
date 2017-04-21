@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+//        storage_path("/app/exist.txt");
         $schedule->command('media:collect')
             ->hourly()
             ->appendOutputTo('/usr/local/laravel/storage/app/exist.txt');

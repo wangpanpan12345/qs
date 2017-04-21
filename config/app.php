@@ -157,7 +157,7 @@ return [
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
         Illuminate\Redis\RedisServiceProvider::class,
-        Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
+//        Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
         Illuminate\Session\SessionServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
@@ -173,7 +173,7 @@ return [
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
@@ -182,7 +182,11 @@ return [
          */
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-//        Jenssegers\Mongodb\Auth\PasswordResetServiceProvider::class,
+        Jenssegers\Mongodb\Auth\PasswordResetServiceProvider::class,
+        //Markdown
+        'YuanChao\Editor\EndaEditorServiceProvider',
+        //
+        Elasticquent\ElasticquentServiceProvider::class,
 
     ],
 
@@ -233,6 +237,8 @@ return [
 
         'Moloquent' => 'Jenssegers\Mongodb\Eloquent\Model',
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'EndaEditor' => 'YuanChao\Editor\Facade\EndaEditorFacade',
+        'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
 
     ],
 

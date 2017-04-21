@@ -4,7 +4,6 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('sidebar')
     @parent
-
 @endsection
 <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 <link href="//cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
@@ -167,15 +166,31 @@
         outline: none;
     }
 
-    .latest {
+    .labels {
         position: absolute;
+        top: 0px;
+        display: block;
+        z-index: 2;
+        float: left;
+        /*border: 1px solid #e2e2e2;*/
+        /*font-size: 12px;*/
+        left: -1px;
+        color: #fff;
+        /*background: #fe4b55;*/
+        /*height: 17px;*/
+        /*line-height: 13px;*/
+        /*padding: 1px 15px;*/
+    }
+
+    .latest {
+        position: relative;
         top: -18px;
         display: block;
         z-index: 2;
         float: left;
         border: 1px solid #e2e2e2;
         font-size: 12px;
-        left: -1px;
+        /*left: -1px;*/
         color: #fff;
         background: #fe4b55;
         height: 17px;
@@ -184,16 +199,32 @@
     }
 
     .important {
-        position: absolute;
+        position: relative;
         top: -18px;
         display: block;
         z-index: 2;
         float: left;
         border: 1px solid #e2e2e2;
         font-size: 12px;
-        left: 55px;
+        /*left: 110px;*/
         color: #fff;
         background: #000;
+        height: 17px;
+        line-height: 13px;
+        padding: 1px 15px;
+    }
+
+    .pubished {
+        position: relative;
+        top: -18px;
+        display: block;
+        z-index: 2;
+        float: left;
+        border: 1px solid #e2e2e2;
+        font-size: 12px;
+        /*left: 55px;*/
+        color: #fff;
+        background: #75ce66;
         height: 17px;
         line-height: 13px;
         padding: 1px 15px;
@@ -222,7 +253,98 @@
         display: inline-block;
     }
 
+    .process_report {
+        position: relative;
+        border: 1px solid #e2e2e2;
+        width: 100%;
+        margin-bottom: 33px;
+        padding: 0;
+
+    }
+
+    .remover_container {
+        display: none;
+        position: fixed;
+        width: 300px;
+        height: 200px;
+        line-height: 70px;
+        left: 50%;
+        margin-left: -150px;
+        top: 50%;
+        margin-top: -50px;
+        z-index: 10;
+        border: 2px solid #48b3f6;
+        background: #48b3f6;
+        color: #fff;
+        vertical-align: middle;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    .remover_container a {
+        display: block;
+        width: 100px;
+        color: #fff;
+        border: 2px solid #fff;
+        margin: 0 90px;
+        height: 40px;
+        line-height: 40px;
+
+    }
+
+    .remover_container a:hover {
+        color: #48b3f6;
+        background: #fff;
+    }
+
+    .remover_container label {
+        margin: 15px 10px;
+    }
+
+    .close_s {
+        position: absolute;
+        display: block;
+        top: 10px;
+        width: 10px;
+        height: 10px;
+        right: 10px;
+        line-height: 10px;
+        cursor: pointer;
+    }
+
+    .deal {
+        width: 0%;
+        border: 1px solid #fe4b55;
+        display: block;
+        margin: 0;
+        line-height: 10px;
+        padding: 0;
+        height: 20px;
+        background: #fe4b55;
+    }
+
+    .delete {
+        float: right;
+    }
+
     @media (max-width: 748px) {
+        .add_relation {
+            display: none;
+        }
+
+        .delete a {
+            display: none;
+        }
+
+        .delete {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+
+        }
+
         .title {
             display: block;
             width: 100%;
@@ -240,12 +362,16 @@
 
 </style>
 @section('content')
-    {{--<h2>DailyNews</h2>--}}
-    {{--<span style="text-align: right;width: 100%;display: block">Last updated at {{$dn->items()[0]->updated_at}}</span>--}}
-    {{--<div class="source_show">Source from :--}}
 
-    {{--</div>--}}
-    <div class="selector">
+    <div class="remover_container">
+        <label><input name="no" type="radio" value="-2"/>内容不相关 </label>
+        <label><input name="no" type="radio" value="-1"/>内容不重要 </label>
+        <span class="close_s">X</span>
+        <input type="text" style="display: none" id="delete_id_tmp"/>
+        <a href="javascript:void(0);" id="delete_selector">提交</a>
+    </div>
+
+    <div class="selector source_select_container">
         <form action="/dailynews/key" method="get" class="search_form">
             <input type="text" name="key" placeholder="keywords"/>
             <input class="selector_ok" type="submit" value="Search"/>
@@ -314,15 +440,26 @@
             <option><span>singularityhub_science</span></option>
             <option><span>singularityhub_technology</span></option>
             <option><span>deepmind</span></option>
+            <option><span>forbes</span></option>
+            <option><span>ca_cancer</span></option>
+            <option><span>immunity</span></option>
+            <option><span>annals</span></option>
+            <option><span>jco</span></option>
+            <option><span>jci</span></option>
+            <option><span>cell_neurosciences</span></option>
+            <option><span>gastrojournal</span></option>
+            <option><span>annals_surgery</span></option>
+            <option><span>jbjsjournal</span></option>
+
 
         </select>
         <input class="add_show" type="submit" value="添加一条"/>
 
-        <a style="float: right" href="/qs-admin/keynews">每日精选</a>
-        <a style="float: right;margin-right: 10px" target="_blank"
-           href="https://admin.geekheal.net/search">缺少关联?去创建</a>
+        {{--<a style="float: right" href="/qs-admin/keynews">每日精选</a>--}}
+        <a class="add_relation" style="float: right;margin-right: 10px" target="_blank"
+           href="https://admin.geekheal.net/create">缺少关联?去创建</a>
     </div>
-    <div class="add_dailynews">
+    <div class="add_dailynews add_news_container">
         <span><input type="text" id="add_title" placeholder="原文标题"/></span>
         <span><input type="text" id="add_link" placeholder="原文链接"/></span>
         <span><input type="text" id="add_source" placeholder="来源"/></span>
@@ -331,43 +468,62 @@
         <select class="tags_select" multiple="multiple" style="width: 300px">
 
         </select>
-        <span>
-            <input type="text" id="add_company" placeholder="所属公司" class="cp_input"/>
-        <ul class="search_r">
+        <span class="company_add_">
+             <select class="company_select" multiple="multiple" style="width: 300px">
 
-        </ul>
+             </select>
         </span>
-        <span>
-             <input class="cp_input_p" id="add_person" placeholder="input person" type="text"/>
-             <ul class="search_r_p">
-             </ul>
+        <span class="person_add_">
+             <select class="person_select" multiple="multiple" style="width: 300px">
+                 <a id="ttt">ttt11</a>
+             </select>
         </span>
         <span><input type="submit" id="add_add" value="提交"/></span>
     </div>
-    {{--{{dd($dn)}}--}}
-    {{--    {{dd($dn->items())}}--}}
+    <div class="process_report">
+        <span class="deal"></span>
+    </div>
+    {{--    {{dd($dn)}}--}}
+    <?php $total = 0;$deal = 0?>
     @foreach($dn->items() as $K => $V)
 
         <div class="list" data-id="{{$V->_id}}">
-            @if($V["created_at"]>Carbon\Carbon::today()->subHours(6))
-                <label class="latest">today</label>
-            @endif
-            @if(isset($V["priority"])&&$V["priority"]=='1')
-                <label class="important">{{$V["source"]}}</label>
-            @endif
+            <div class="labels">
+                @if($V["created_at"]>Carbon\Carbon::today()->subHours(6))
+                    <?php $total++;?>
+                    @if(!empty($V["tags"]||!empty($V["company"])||$V["is_pub"]=='1'||$V["flag"]=='0'))
+                        <?php $deal++;?>
+                    @endif
+                    <label class="latest">today</label>
+                @endif
+                @if(isset($V["priority"])&&$V["priority"]=='1')
+                    <label class="important">{{$V["source"]}}</label>
+                @endif
+                @if(isset($V["is_pub"])&&$V["is_pub"]=='1')
+                    <label class="pubished">{{"已发布"}}</label>
+                @endif
+            </div>
             <span class="title">
                 <a style="margin: 0" target="_blank"
-                   href="{{ URL::to($V["link"]) }}">{{$V["title"]}}</a>
+                   href="{{ URL::to($V["link"]) }}">{!! $V["title"] !!}</a>
             </span>
             <span class="pub_at">@if($V["pub_date"]!="")pub_at:{{$V["pub_date"]}}@endif</span>
             <span class="source">
                 From:<a href="/dailynews/source/{{$V["source"]}}">{{$V["source"]}}</a>
             </span>
             @if($V["company"]!="")
-                <span class="company_relate">Related:{{$V["company"]}}</span>
+                <span class="company_relate">Related:
+                    @foreach($V["company"] as $c=>$n)
+                        <a href="/qs-admin/detail/{{$n["_id"]}}">{{$n["name"]}}</a>
+                    @endforeach
+                </span>
             @endif
             @if($V["person"]!="")
-                <span class="company_relate">Related:{{$V["person"]}}</span>
+                <span class="company_relate">Related person:
+                    @foreach($V["person"] as $t=>$g)
+                        <a href="/qs-admin/founder/{{$g["_id"]}}">{{$g["name"]}}</a>
+                    @endforeach
+                </span>
             @endif
             @if(!empty($V["tags"]))
                 <span class="company_relate">tags:
@@ -382,29 +538,39 @@
                 <span class="opr company"><a style="margin: 0" href="javascript:void(0);">关联公司</a></span>
                 <span class="opr person"><a style="margin: 0" href="javascript:void(0);">关联人</a></span>
                 <span class="opr tags"><a style="margin: 0" href="javascript:void(0);">打标签</a></span>
-                <span class="opr pub_news"><a style="margin: 0" href="javascript:void(0);">生成快讯</a></span>
+                <span class="opr pub_news"><a style="margin: 0" href="javascript:void(0);">列为精选</a></span>
+                <span class="opr delete" data-id="{{$V->_id}}"><a style="margin: 0" href="javascript:void(0);">移入回收站</a></span>
 
                 <span class="opr_company">
-                    <div class="company_wap" style="display: inline-block">
-                        <input class="cp_input" type="text" placeholder="input company" value="{{$V["company"]}}"/>
-                        <ul class="search_r">
-
-                        </ul>
-                    </div>
+                    <select class="company_select" multiple="multiple" style="width: 300px">
+                        @if(!empty($V->company))
+                            @foreach($V->company as $kt=>$kv)
+                                <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
+                            @endforeach
+                        @endif
+                    </select>
                     <input data-id="{{$V->_id}}" class="company_in" type="button" value="commit"/>
                 </span>
+
                 <span class="opr_person">
-                    <div class="person_wap" style="display: inline-block">
-                        <input class="cp_input_p" placeholder="input person" type="text" value="{{$V["person"]}}"/>
-                        <ul class="search_r_p">
-                        </ul>
-                    </div>
+
+                    <select class="person_select" multiple="multiple" style="width: 300px">
+                        @if(!empty($V->person))
+                            @foreach($V->person as $kt=>$kv)
+                                <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
+                            @endforeach
+                        @endif
+                    </select>
                     <input data-id="{{$V->_id}}" class="person_in" type="button" value="commit"/>
                 </span>
 
                 <span class="opr_tags">
                     <select class="tags_select" multiple="multiple" style="width: 300px">
-
+                        @if(!empty($V->tags))
+                            @foreach($V->tags as $kt=>$kv)
+                                <option value="{{$kv}}" selected="selected">{{$kv}}</option>
+                            @endforeach
+                        @endif
                     </select>
                     <input data-id="{{$V->_id}}" class="tags_in" type="button" value="commit"/>
                 </span>
@@ -420,9 +586,13 @@
 
     @endforeach
     {{$dn->links()}}
-
+    @if($total==0)
+        {{$total = 1}}
+    @endif
     <script>
         $(function () {
+            $(".deal").css({"width": "<?php echo ($deal*100/$total)."%"; ?>"});
+            $(".deal").attr({"title": "<?php echo $deal; ?>"});
             $(".company").click(function () {
                 var company = $(this).siblings(".opr_company");
                 company.toggle();
@@ -444,6 +614,9 @@
             $(".add_show").click(function () {
                 $(".add_dailynews").toggle();
             });
+            $(".close_s").click(function () {
+                $(this).parent().hide();
+            });
             $(".source_select").change(function () {
                 var source = $(this).children('option:selected').text();
                 if (source == "All") {
@@ -458,8 +631,25 @@
                 var param = {};
                 param.title = $("#add_title").val();
                 param.link = $("#add_link").val();
-                param.company = $("#add_company").val();
-                param.person = $("#add_person").val();
+                var person = $(this).parent().siblings(".person_add_").children(".person_select").children('option');
+                var persons = [];
+                $.each(person, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+                    persons.push(data);
+                });
+                var company = $(this).parent().siblings(".company_add_").children(".company_select").children('option');
+                var companys = [];
+                var _id = $(this).attr("data-id");
+                $.each(company, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+                    companys.push(data);
+                });
+                param.company = companys;
+                param.person = persons;
                 param.source = $("#add_source").val();
                 param.excerpt = $("#add_excerpt").val();
                 param.created_at = $("#add_created").val();
@@ -475,6 +665,7 @@
                     return false;
                 }
                 console.log(param);
+//                return false;
                 add_dailynews("/dailynews/add", param, $(this).parent().parent());
 //                console.log(param);
             });
@@ -508,23 +699,37 @@
             });
             $(".company_in").click(function () {
                 var param = {};
-                var name = $(this).siblings(".company_wap").children(".cp_input").val();
+                var company = $(this).siblings(".company_select").children('option');
+                var tags = [];
                 var _id = $(this).attr("data-id");
-                param.company = name;
+                $.each(company, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+                    tags.push(data);
+                });
+                param.company = tags;
                 param._id = _id;
-//                if(param.company=="")
-//                    return false;
+                console.log(param);
+//                return false;
                 update_company("/api/dailynews/company", param, $(this));
             });
             $(".person_in").click(function () {
                 var param = {};
-                var name = $(this).siblings(".person_wap").children(".cp_input_p").val();
+                var person = $(this).siblings(".person_select").children('option');
+                var tags = [];
                 var _id = $(this).attr("data-id");
-                param.person = name;
+                $.each(person, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+                    tags.push(data);
+                });
+                param.person = tags;
                 param._id = _id;
-//                if(param.company=="")
-//                    return false;
+                console.log(param.person);
                 update_person("/api/dailynews/person", param, $(this));
+                return false;
             });
 
             $(".excerpt_in").click(function () {
@@ -549,6 +754,24 @@
                 param._id = _id;
 
                 update_tags("/api/dailynews/tags/update", param, $(this));
+            });
+            $(".delete").click(function () {
+                var _id = $(this).attr("data-id");
+                $("#delete_id_tmp").val(_id);
+                $(".remover_container").show();
+            });
+            $("#delete_selector").click(function () {
+                var d_flag = $("input[name='no']:checked").val();
+                var _id = $("#delete_id_tmp").val();
+                if (d_flag == "undefined" || typeof (d_flag) == "undefined") {
+                    alert("请选择移除原因!");
+                    return false;
+                }
+                var param = {};
+                param._id = _id;
+                param.flag = d_flag;
+                delete_this("/dailynews/delete", param, $(this));
+
             });
 
 
@@ -635,7 +858,7 @@
                         if (data.error == 0) {
                             alert("success update!");
                             dom.parent(".opr_person").hide();
-                            location.reload();
+//                            location.reload();
                         } else {
                             console.log(data);
                         }
@@ -661,11 +884,38 @@
 //                            console.log(data);
                             alert("success update!");
                             dom.parent(".opr_excerpt").hide();
+//                            window.location.reload();
                         } else {
                             console.log(data);
                         }
                     },
                     error: function (data) {
+                        console.log(data);
+                    }
+                })
+
+            }
+
+            function delete_this(url, param, dom) {
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: param,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        if (data.error == 0) {
+                            $(".list[data-id='" + param._id + "']").remove();
+                            dom.parent().hide();
+                        } else {
+                            alert("移除失败!")
+                            console.log(data);
+                        }
+                    },
+                    error: function (data) {
+                        alert("网络错误!")
                         console.log(data);
                     }
                 })
@@ -764,6 +1014,45 @@
                 }
             });
 
+            $(".person_select").select2({
+                placeholder: 'input persons',
+                ajax: {
+                    url: "/api/person/name/dy",
+                    cache: true,
+                    delay: 250,
+                    processResults: function (data) {
+//                        console.log(data);
+                        var rs = [];
+                        $.each(data.result, function (n, value) {
+                            var param = {};
+                            param.id = value["_id"];
+                            param.text = value["name"];
+                            rs.push(param);
+                        });
+                        return {results: rs}
+                    },
+                }
+            });
+
+            $(".company_select").select2({
+                placeholder: 'input companies',
+                ajax: {
+                    url: "/api/company/name/dy",
+                    cache: true,
+                    delay: 250,
+                    processResults: function (data) {
+//                        console.log(data);
+                        var rs = [];
+                        $.each(data.result, function (n, value) {
+                            var param = {};
+                            param.id = value["_id"];
+                            param.text = value["name"];
+                            rs.push(param);
+                        });
+                        return {results: rs}
+                    },
+                }
+            });
 
             function _debounce(func, wait, immediate) {
                 var timeout, args, context, timestamp, result;
@@ -800,11 +1089,41 @@
                     return result;
                 };
             };
+
+            $(".pub_news").click(function () {
+                var param = {};
+                param.name = "wang";
+                param._id = $(this).parent().parent(".list").attr("data-id");
+
+                post_edit_notify(param, "/dailynews/edit/notify");
+            });
+
+            function post_edit_notify(param, url) {
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: param,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        if (data.error == 0) {
+
+                        } else {
+                            console.log(data);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
         });
     </script>
     <script type="text/javascript">
         $(".tags_select").select2();
-    </script>
 
+    </script>
 
 @endsection
