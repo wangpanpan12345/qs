@@ -20,6 +20,10 @@
         margin: 0;
     }
 
+    ::-webkit-input-placeholder {
+        color: #c0c2c1;
+    }
+
     .border_container {
         width: 3%;
         border: 1px solid #0299f8;
@@ -50,8 +54,9 @@
         margin-top: 10px;
 
     }
-    .tag_add{
-        border-left-width:10px;
+
+    .tag_add {
+        border-left-width: 10px;
         border-left-color: #0299f8;
         border-top-left-radius: 10px;
         border-bottom-left-radius: 10px;
@@ -60,7 +65,7 @@
     .tag_container label {
         width: 100px;
         text-align: right;
-        color: #000;
+        color: #4e4e4e;
     }
 
     .tag_container input {
@@ -106,10 +111,21 @@
 
     .ok_container input {
         width: 100%;
-        background: #fff;
-        border: 2px solid #89cafc;
-        color: #89cafc;
-        border-radius: 2px;
+        background: #1e88e5;
+        /*border: 2px solid #1e88e5;*/
+        color: #fff;
+        /*border-radius: 2px;*/
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
+    }
+
+    .add_ok:hover {
+        background: #0d47a1;
+        /*border: 2px solid #0d47a1;*/
+        color: #fff;
+        /*border: none;*/
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
     }
 
     .first_tag p {
@@ -133,15 +149,16 @@
         cursor: pointer;
         font-size: 14px;
     }
+
     /*.third_tag:after{*/
-        /*border: 10px solid transparent;*/
-        /*border-left: 10px solid #f00;*/
-        /*width: 0;*/
-        /*height: 0;*/
-        /*position: absolute;*/
-        /*content: ' '*/
+    /*border: 10px solid transparent;*/
+    /*border-left: 10px solid #f00;*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*position: absolute;*/
+    /*content: ' '*/
     /*}*/
-    .tag{
+    .tag {
         border-radius: 2px;
     }
 
@@ -151,30 +168,331 @@
 
     .fourth_tag {
         margin: 10px 15px;
-        background:#89cafc;
-        height: 30px!important;
-        line-height: 30px!important;
+        background: #89cafc;
+        height: 30px !important;
+        line-height: 30px !important;
         color: #fff;
     }
-    .s_first_label{
+
+    .s_first_label {
         font-size: 18px;
         font-weight: 500;
         color: #0299f8;
     }
-    .second_tag_label{
+
+    .second_tag_label {
         color: #fff;
-        background:#0299f8;
+        background: #0299f8;
+        float: left;
+        display: block;
     }
-    .third_tag_label{
+
+    .third_tag_label {
         color: #fff;
-        background:#48b3f6;
+        background: #48b3f6;
+    }
+
+    ._58527195c3666efea044ab4a {
+        color: #1e88e5;
+    }
+
+    .s_58527195c3666efea044ab4a {
+        background: #1e88e5;
+    }
+
+    ._58575cc6c3666e0519353094 {
+        color: #ffa000;
+    }
+
+    .s_58575cc6c3666e0519353094 {
+        background: #ffa000;
+    }
+
+    ._5861d7a6e9c046043f7b56a4 {
+        color: #4caf50;
+    }
+
+    .s_5861d7a6e9c046043f7b56a4 {
+        background: #4caf50;
+    }
+
+    ._58638e99e9c04603d141deb0 {
+        color: #f44336;
+    }
+
+    .s_58638e99e9c04603d141deb0 {
+        background: #f44336;
+    }
+
+    .t_58527195c3666efea044ab4a .second_tag_label {
+        background: #0d47a1;
+    }
+
+    .t_58527195c3666efea044ab4a .third_tag_label {
+        background: #1e88e5;
+        border-radius: 2px;
+    }
+
+    .t_58527195c3666efea044ab4a .fourth_tag {
+        background: #90caf9;
+        border-radius: 6px;
+        vertical-align: bottom;
+    }
+
+    .t_58575cc6c3666e0519353094 .second_tag_label {
+        background: #c86b23;
+    }
+
+    .t_58575cc6c3666e0519353094 .third_tag_label {
+        background: #ffa000;
+        border-radius: 2px;
+    }
+
+    .t_58575cc6c3666e0519353094 .fourth_tag {
+        background: #f9c834;
+        border-radius: 6px;
+    }
+
+    .t_5861d7a6e9c046043f7b56a4 .second_tag_label {
+        background: #4caf50;
+    }
+
+    .t_58638e99e9c04603d141deb0 .second_tag_label {
+        background: #b71c1c;
+    }
+
+    .tag_anchor {
+        display: block;
+        position: fixed;
+        right: 30px;
+        top: 40%;
+        border-radius: 4px;
+    }
+
+    .tag_anchor span {
+        display: block;
+        width: 40px;
+        text-align: center;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .tag_anchor a {
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .tag_anchor a:hover {
+        text-decoration: none;
+    }
+
+    .med_anchor {
+        display: block;
+        background: #1e88e5;
+        height: 50px;
+        line-height: 20px;
+        vertical-align: middle;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .med_anchor:hover {
+        background: #0d47a1;
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
+    }
+
+    .med_anchor span, .them_anchor span {
+        padding-top: 5px;
+    }
+
+    .gene_anchor {
+        display: block;
+        background: #4caf50;
+        height: 40px;
+        line-height: 40px;
+        vertical-align: middle;
+        text-underline: none;
+    }
+
+    .gene_anchor:hover {
+        background: #1b5e20;
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
+    }
+
+    .des_anchor {
+        background: #ffa000;
+        display: block;
+        height: 40px;
+        line-height: 40px;
+        vertical-align: middle;
+        text-underline: none;
+    }
+
+    .des_anchor:hover {
+        background: #c86b23;
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
+    }
+
+    .them_anchor {
+        background: #f44336;
+        display: block;
+        height: 50px;
+        line-height: 20px;
+        vertical-align: middle;
+        text-underline: none;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .them_anchor:hover {
+        background: #b71c1c;
+        -webkit-transition: all .1s ease-in .1s;
+        transition: all .1s ease-in .1s;
+    }
+
+    .n_anchor {
+        background: #dee5ea;
+        display: block;
+        height: 40px;
+        line-height: 40px;
+        vertical-align: middle;
+        text-underline: none;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+
+    .square_container {
+        display: inline-block;
+        position: relative;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+    }
+
+    .square {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -7px;
+        margin-left: -5px;
+        width: 10px;
+        height: 10px;
+    }
+
+    .third_wrap {
+        display: inline-block;
+        /*float: left;*/
+        width: 86%;
+    }
+
+    .t_5861d7a6e9c046043f7b56a4 .second_tag, .t_5861d7a6e9c046043f7b56a4 .second_tag {
+        display: inline-block !important;
+        position: relative;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    .t_5861d7a6e9c046043f7b56a4 .clear {
+        display: none;
+    }
+
+    .arrow {
+        height: 16px;
+    }
+
+    .arrow-top {
+        width: 0 !important;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 10px solid #bec3c8;
+    }
+
+    .square-top {
+        width: 8px !important;
+        background: #bec3c8;
+        height: 6px;
+        margin-left: 4px;
+    }
+
+    .n_anchor:hover {
+        background: #a7aeb4;
+    }
+
+    .n_anchor:hover > .arrow > .arrow-top {
+        border-bottom: 10px solid  #cdd5db;
+    }
+    .n_anchor:hover > .arrow > .square-top{
+        background: #cdd5db;
+    }
+
+    @media (max-width: 1200px) {
+        .tag_anchor {
+            right: 0;
+        }
+
+        .ok_container {
+            width: 35%;
+        }
+
+        .item_container {
+            width: 64%;
+        }
+
+        .tag_container label {
+            width: 26%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tag_anchor {
+            right: 0;
+        }
+
+        .ok_container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .ok_container input {
+            width: 50%;
+        }
+
+        .item {
+            width: 100%;
+        }
+
+        .item_container {
+            width: 100%;
+        }
+
+        .tag_container label {
+            width: 40%;
+            text-align: left;
+        }
     }
 
 
 </style>
 @section('content')
-
-    <div class="tag_container tag_add">
+    <div class="tag_anchor">
+        <a class="n_anchor box" href="#top">
+            <div class="arrow"><span class="arrow-top"></span><span class="square-top"></span></div>
+        </a>
+        <a class="med_anchor" href="#58574a7bc3666e2e1a4b60d1mao"><span>医疗科技</span></a>
+        <a class="des_anchor" href="#58575d11c3666e5b3f404cafmao"><span>疾病</span></a>
+        <a class="gene_anchor" href="#585e27e7e9c0460445718d63mao"><span>基因</span></a>
+        <a class="them_anchor" href="#58638ea5e9c0460445718d84mao"><span>中心主题</span></a>
+    </div>
+    <div class="tag_container tag_add" name="top">
         {{--<div class="border_container"></div>--}}
         <div class="item_container">
             <div class="item">
@@ -208,13 +526,85 @@
 
     </div>
 
-        <?php
-        $array_first = [];
-        $array_second = [];
-        $array_third = [];
-        $array_fourth = [];
-        ?>
-        {{--{{dd($tags)}}--}}
+    <?php
+    $array_first = [];
+    $array_second = [];
+    $array_third = [];
+    $array_fourth = [];
+    ?>
+    {{--{{dd($tags)}}--}}
+    @foreach($tags as $K=>$V)
+        {{--{{dd($V)}}--}}
+        @if($V->group_id==0)
+            <?php
+            $array_first[] = $V->_id;
+            unset($tags[$K]);
+            ?>
+        @elseif(in_array($V->group_id,$array_first))
+            <?php
+            $array_first[$V->group_id][] = $V->name;
+            ?>
+            <div name="{{$V->_id."mao"}}" id="{{$V->_id."mao"}}"
+                 style="display: block;top: -40px;position: relative;"></div>
+            <div class="square_container"><span class="square s_{{$V->group_id}}"></span></div>
+            <span class="s_first_label tag _{{$V->group_id}}">{{$V->name}}</span>
+            <div class="first_tag tag tag_container t_{{$V->group_id}}" id="{{$V->_id}}" group_id="{{$V->group_id}}"
+                 data-tag="{{$V->name}}">
+
+            </div>
+            <div class="clear"></div>
+            <?php
+            $array_second[] = $V->_id;
+            unset($tags[$K]);
+            ?>
+        @elseif(in_array($V->group_id,$array_second))
+            <?php
+            $array_second[$V->group_id][] = $V->name;
+            ?>
+            <script>
+                $(function () {
+                    var html = '<div class="second_tag tag" data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span><div class="third_wrap" id=<?php echo $V->_id;?>></div></div>' + '<div class="clear"></div>'
+                    $("#<?php echo $V->group_id; ?>").append(html);
+                })
+            </script>
+            <?php
+            $array_third[] = $V->_id;
+            unset($tags[$K]);
+            ?>
+        @elseif(in_array($V->group_id,$array_third))
+            <?php
+            $array_third[$V->group_id][] = $V->name;
+            ?>
+            <script>
+                $(function () {
+                    var html = '<div class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="third_tag_label tag"><?php echo $V->name; ?></span></div>'
+                    $("#<?php echo $V->group_id; ?>").append(html);
+                })
+            </script>
+            <?php
+            $array_fourth[] = $V->_id;
+            unset($tags[$K]);
+            ?>
+        @elseif(in_array($V->group_id,$array_fourth))
+            <?php
+            $array_fourth[$V->group_id][] = $V->name;
+            ?>
+            <script>
+                $(function () {
+                    var html = '<span class="fourth_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><?php echo $V->name; ?></span>'
+                    $("#<?php echo $V->group_id; ?>").append(html);
+                })
+            </script>
+            <?php
+            $array_fourth[] = $V->_id;
+            unset($tags[$K]);
+            ?>
+        @endif
+        {{--<div id="">{{$V->name}}</div>--}}
+        {{--@elseif(in_array($V["group_id"],$array_first))--}}
+
+    @endforeach
+    @while($tags->count()>0)
         @foreach($tags as $K=>$V)
             {{--{{dd($V)}}--}}
             @if($V->group_id==0)
@@ -227,7 +617,8 @@
                 $array_first[$V->group_id][] = $V->name;
                 ?>
                 <span class="s_first_label tag">{{$V->name}}</span>
-                <div class="first_tag tag tag_container" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
+                <div class="first_tag tag tag_container" id="{{$V->_id}}" group_id="{{$V->group_id}}"
+                     data-tag="{{$V->name}}">
 
                 </div>
                 <?php
@@ -240,7 +631,7 @@
                 ?>
                 <script>
                     $(function () {
-                        var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span></div>'
+                        var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span><div class="third_wrap" id=<?php echo $V->_id;?>></div></div>'
                         $("#<?php echo $V->group_id; ?>").append(html);
                     })
                 </script>
@@ -281,76 +672,9 @@
             {{--@elseif(in_array($V["group_id"],$array_first))--}}
 
         @endforeach
-        @while($tags->count()>0)
-            @foreach($tags as $K=>$V)
-                {{--{{dd($V)}}--}}
-                @if($V->group_id==0)
-                    <?php
-                    $array_first[] = $V->_id;
-                    unset($tags[$K]);
-                    ?>
-                @elseif(in_array($V->group_id,$array_first))
-                    <?php
-                    $array_first[$V->group_id][] = $V->name;
-                    ?>
-                    <span class="s_first_label tag">{{$V->name}}</span>
-                    <div class="first_tag tag tag_container" id="{{$V->_id}}" group_id="{{$V->group_id}}" data-tag="{{$V->name}}">
-
-                    </div>
-                    <?php
-                    $array_second[] = $V->_id;
-                    unset($tags[$K]);
-                    ?>
-                @elseif(in_array($V->group_id,$array_second))
-                    <?php
-                    $array_second[$V->group_id][] = $V->name;
-                    ?>
-                    <script>
-                        $(function () {
-                            var html = '<div class="second_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="second_tag_label tag"><?php echo $V->name; ?></span></div>'
-                            $("#<?php echo $V->group_id; ?>").append(html);
-                        })
-                    </script>
-                    <?php
-                    $array_third[] = $V->_id;
-                    unset($tags[$K]);
-                    ?>
-                @elseif(in_array($V->group_id,$array_third))
-                    <?php
-                    $array_third[$V->group_id][] = $V->name;
-                    ?>
-                    <script>
-                        $(function () {
-                            var html = '<div class="third_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><span class="third_tag_label tag"><?php echo $V->name; ?></span></div>'
-                            $("#<?php echo $V->group_id; ?>").append(html);
-                        })
-                    </script>
-                    <?php
-                    $array_fourth[] = $V->_id;
-                    unset($tags[$K]);
-                    ?>
-                @elseif(in_array($V->group_id,$array_fourth))
-                    <?php
-                    $array_fourth[$V->group_id][] = $V->name;
-                    ?>
-                    <script>
-                        $(function () {
-                            var html = '<span class="fourth_tag tag" id=<?php echo $V->_id;?> data-tag="{{$V->name}}"><?php echo $V->name; ?></span>'
-                            $("#<?php echo $V->group_id; ?>").append(html);
-                        })
-                    </script>
-                    <?php
-                    $array_fourth[] = $V->_id;
-                    unset($tags[$K]);
-                    ?>
-                @endif
-                {{--<div id="">{{$V->name}}</div>--}}
-                {{--@elseif(in_array($V["group_id"],$array_first))--}}
-
-            @endforeach
-        @endwhile
-        {{--        {{var_dump($tags->count())}}--}}
-        {{--{{dd($array_third)}}--}}
+    @endwhile
+    {{--        {{var_dump($tags->count())}}--}}
+    {{--{{dd($array_third)}}--}}
 
 
     <script>
@@ -386,7 +710,7 @@
             $(".add_ok").click(function () {
                 var param = {};
                 param.name = $("#name").val();
-                if(param.name == ""){
+                if (param.name == "") {
                     alert("标签名不为空!");
                     return false;
                 }
@@ -412,7 +736,7 @@
 
             $("span.tag").click(function () {
                 var tag = $(this).text();
-                window.location.href = "/timeline/tag/" + tag;
+                window.location.href = encodeURI("/timeline/tag/" + encodeURIComponent(tag));
             });
 
 

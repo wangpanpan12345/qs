@@ -4,8 +4,11 @@
 
 {{--@section('sidebar')--}}
 {{--@parent--}}
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 {{--@endsection--}}
+<link href="https://cdn.bootcss.com/jquery-bar-rating/1.2.2/themes/fontawesome-stars.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+{{--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">--}}
 <style>
     body {
         font-family: "Pingfang SC", "Microsoft YaHei", Helvetica, STHeiti, Verdana, Arial, Tahoma, sans-serif !important;
@@ -26,18 +29,18 @@
     }
 
     table {
-        border: 1px #b2b2b2 solid;
+        border: 1px #e2e2e2 solid;
         text-align: center;
     }
 
     thead tr {
         height: 30px;
-        border-bottom: 1px #b2b2b2 solid;
+        border-bottom: 1px #e2e2e2 solid;
     }
 
     thead th {
         text-align: center;
-        border-right: 1px #b2b2b2 solid;
+        border-right: 1px #e2e2e2 solid;
     }
 
     tbody tr {
@@ -49,10 +52,19 @@
     }
 
     tbody td {
-        border-right: 1px #b2b2b2 solid;
+        border-right: 1px #e2e2e2 solid;
+        text-align: justify;
+        font-size: 14px;
+        line-height: 30px;
+        padding: 1px 15px;
     }
 
-    .overview {
+    tbody em {
+        color: #ebb701;
+        font-style: normal;
+    }
+
+    .overview, .ic {
         padding: 20px;
         border: 1px solid #e2e2e2;
         background: #fff;
@@ -178,7 +190,8 @@
         color: #e2e2e2;
 
     }
-    .key_edit{
+
+    .key_edit {
         float: right;
         color: #fe4b55;
         border: 2px solid #fe4b55;
@@ -187,8 +200,75 @@
         border-radius: 5px;
     }
 
+    .br-wrapper {
+        text-align: center;
+    }
+
+    .des {
+        display: inline-block;
+        margin-left: 105px;
+        margin-top: -22px;
+        margin-bottom: 10px;
+        line-height: 26px;
+        text-align: justify;
+        float: left;
+    }
+
+    .tag {
+        display: inline-block;
+        background: #48b3f6;
+        color: #fff;
+        padding: 2px 4px;
+        border-radius: 3px;
+        border: 2px solid #48b3f6;
+    }
+
+    .tag:hover {
+        color: #48b3f6;
+        background: #fff;
+        text-decoration: none;
+        border: 2px solid #48b3f6;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    .row_one, .row_two {
+        margin: 10px auto;
+        display: inline-block;
+    }
+
+    .row_one label, .row_two label {
+        margin-right: 5px;
+    }
+
+    .row_one span {
+        line-height: 28px;
+    }
+
+    .row_two {
+        width: 48%;
+    }
+
+    .yewu {
+        display: inline-block;
+        line-height: 30px;
+    }
+
+    .yewu img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .bottom {
+        margin: 50px auto;
+    }
+
+
 </style>
 @section('content')
+
     <h1><a href="{{env("EDIT_URL","https://admin.geekheal.net")}}/edit/company/{{$detail->id}}"
            target="_blank">编辑该词条-{{$detail->qi_score}}</a></h1>
     @if(count($merge)>0) Merged by : <a href="{{Url('/qs-admin/detail/'.$merge->_id)}}">{{$merge->name}}</a> @endif
@@ -197,6 +277,11 @@
     </p>
     <h2 style="text-align: center"> {{$detail->name}}{{isset($detail->status)&&$detail->status=="已关闭"?"(已关闭)":""}}</h2>
     {{--{{dd(is_array($detail->founder))}}--}}
+    <select id="rate" data-id="{{$detail->id}}">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+    </select>
     <div class="overview">
         @if(!empty($detail->founder)&&$detail->founder!="")
             <p><b class="o_label">创始人:</b>
@@ -210,7 +295,9 @@
             </p>
         @endif
 
-        <p><b class="o_label">简述:</b> <span>{{$detail->des}}</span></p>
+        <p><b class="o_label" style="display: block">简述:</b> <span class="des">  {{$detail->des}}</span></p>
+
+        <div class="clear"></div>
 
         {{--<p><b class="o_label">行业:</b> {{(!empty($detail->industry))?$detail->industry:"Health Care"}}</p>--}}
 
@@ -232,15 +319,81 @@
 
         <p><b class="o_label">规模: </b>{{explode("|",$detail->scale)[0]}}</p>
 
+        <?php if(isset($detail->offices) && $detail->offices != "") ?><p><b
+                    class="o_label">全称: </b>{{$detail->fullName}}</p>
+
         <p><b class="o_label">标签:</b>
             @if(isset($detail->tags)&&!empty($detail->tags))
                 @foreach($detail->tags as $k=>$v)
-                    <a href="{{'/qs-admin/tag/'.$v}}">{{$v}},</a>
+                    <a class="tag" href="{{'/qs-admin/tag/'.$v}}">{{$v}}</a>
                 @endforeach
             @endif
         </p>
     </div>
+    @if(!empty($ic))
+        <h3>工商信息</h3>
+        <div class="ic">
+            <div>
+                <div class="row_two"><label>法人代表:</label><span>{{$ic["legalentity"]}}</span></div>
+                <div class="row_two"><label>注册资本:</label><span>{{$ic["regmoney"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_two"><label>注册时间:</label><span>{{$ic["regdate"]}}</span></div>
+                <div class="row_two"><label>经营状态:</label><span>{{$ic["status"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_two"><label>工商注册号:</label><span>{{$ic["ic"]["regnum"]}}</span></div>
+                <div class="row_two"><label>组织机构代码:</label><span>{{$ic["ic"]["orgnum"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_two"><label>统一信用代码:</label><span>{{$ic["ic"]["creditnum"]}}</span></div>
+                <div class="row_two"><label>企业类型:</label><span>{{$ic["ic"]["btype"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_two"><label>行业:</label><span>{{$ic["ic"]["hangye"]}}</span></div>
+                <div class="row_two"><label>营业期限:</label><span>{{$ic["ic"]["timelimit"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_two"><label>核准日期:</label><span>{{$ic["ic"]["approvetime"]}}</span></div>
+                <div class="row_two"><label>登记机关:</label><span>{{$ic["ic"]["regorg"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_one"><label>注册地址:</label><span>{{$ic["ic"]["regaddr"]}}</span></div>
+            </div>
+            <div>
+                <div class="row_one"><label>经营范围:</label><span>{{$ic["ic"]["businessscope"]}}</span></div>
+            </div>
+        </div>
+        {{--{{dd($ic)}}--}}
+    @endif
 
+    @if(!empty($ic["icchange"]))
+        <h3>工商变更</h3>
+
+        <table style="margin: 0 auto;width: 100%;">
+            <thead>
+            <tr>
+                <th width="11%">变更时间</th>
+                <th width="10%">变更项目</th>
+                <th width="34%">变更前</th>
+                <th width="35%">变更后</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($ic["icchange"] as $rk =>$rv)
+                <tr>
+                    <td>{{isset($rv["changeTime"])?$rv["changeTime"]:""}}</td>
+                    <td>{{isset($rv["changeItem"])?$rv["changeItem"]:""}}</td>
+                    <td>
+                    {!! isset($rv["contentBefore"])?$rv["contentBefore"]:"" !!}
+                    <td>
+                        {!! isset($rv["contentAfter"])?$rv["contentAfter"]:"" !!}
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endif
     @if(isset($detail->detail)&&!empty($detail->detail))
         <h3>公司详情</h3>
         <div class="detail_wap">
@@ -292,6 +445,43 @@
     @endif
 
 
+    @if(isset($ic["funding"])&&!empty($ic["funding"]))
+        <div style="margin-bottom: 20px;">
+            <h3>融资详情(来自工商信息)</h3>
+            <table style="margin: 0 auto;width: 100%;">
+                <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>轮次</th>
+                    <th>金额</th>
+                    <th>投资机构</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($ic["funding"] as $rk =>$rv)
+                    <tr>
+                        <td>{{isset($rv["times"])?$rv["times"]:""}}</td>
+                        <td>{{$rv["phase"]}}</td>
+                        <td>
+                        @if($rv["amount_o"]=="$0M"||$rv["amount_o"]=="$0K")
+                            {{"未透露"}}
+                        @else
+                            {{$rv["amount_o"]}}
+                        @endif
+
+                        {{--                            {{(is_float($rv["amount"])&&strlen($rv["amount"])>6)?$rv["amount"]*6.7."万元":"$ " .$rv["amount"]."万"}}</td>--}}
+                        <td>
+                            {{$rv["investorName"]}}
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+
+
     @if(isset($detail->investments)&&!empty($detail->investments))
 
         <div style="margin-bottom: 20px;">
@@ -314,6 +504,32 @@
                             <td><a href="#">{{$rv["name"]}}</a></td>
                         </tr>
                     @endif
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    @if(isset($ic["invest"])&&!empty($ic["invest"]))
+        <div style="margin-bottom: 20px;">
+            <h3>对外投资(来自工商信息)</h3>
+            <table style="margin: 0 auto;width: 100%;">
+                <thead>
+                <tr>
+                    <th>创办时间</th>
+                    <th>法人</th>
+                    <th>公司</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($ic["invest"] as $rk =>$rv)
+                    <tr>
+                        <td>{{isset($rv["estiblishTime"])?Carbon\Carbon::createFromTimestamp($rv["estiblishTime"]/1000)->toDateString():""}}</td>
+                        <td>{{$rv["legalPersonName"]}}</td>
+                        <td>
+                            {{$rv["name"]}}
+                        </td>
+                    </tr>
                 @endforeach
                 </tbody>
             </table>
@@ -362,6 +578,21 @@
         </div>
 
     @endif
+
+    @if(isset($ic["business"])&&!empty($ic["business"]))
+        <div style="width: 100%;float: left;">
+            <h3>公司业务</h3>
+            @foreach($ic["business"] as $ak =>$av)
+                <div>
+                    <span class="yewu"><img src="{{$av["logo"]}}"/></span>
+                    <span class="yewu">{{$av["product"]}}<br>{{$av["yewu"]}}</span>
+                </div>
+            @endforeach
+
+        </div>
+
+    @endif
+
     {{--    {{dd($detail->founders())}}--}}
     @if(!empty($detail->founders()))
         <div style="width: 100%;float: left;">
@@ -404,6 +635,49 @@
         </div>
 
     @endif
+    <div style="clear: both"></div>
+    @if(isset($ic["site_record"])&&!empty($ic["site_record"]))
+        <h3>网站备案</h3>
+
+        <table style="margin: 0 auto;width: 100%;">
+            <thead>
+            <tr>
+                <th width="12%">审核时间</th>
+                <th width="24%">网站名称</th>
+                <th width="22%">网站首页</th>
+                <th width="13%">域名</th>
+                <th width="18%">备案号</th>
+                {{--<th width="35%">状态</th>--}}
+                <th width="9%">单位性质</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($ic["site_record"] as $rk =>$rv)
+                <tr>
+                    <td>{{isset($rv["examineDate"])?$rv["examineDate"]:""}}</td>
+                    <td>{{$rv["webName"]}}</td>
+                    <td>
+                    {{$rv["webSite"][0]}}
+                    <td>
+                        {{ $rv["ym"] }}
+                    </td>
+                    <td>
+                        {{ $rv["liscense"] }}
+                    </td>
+                    {{--<td>--}}
+                    {{--{{ $rv["ym"] }}--}}
+                    {{--</td>--}}
+                    <td>
+                        {{ $rv["companyType"] }}
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endif
+
+
     @if(!empty($timeline)&&count($timeline)>0)
         <span class="menu_title">Timeline</span>
 
@@ -427,6 +701,7 @@
                     @endif
                 </span>
                     <span class="source_i">Editor:{{$V->users["name"]}}</span>
+
                     <div class="key_edit"><span>编辑</span></div>
                     {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
                 </div>
@@ -435,13 +710,59 @@
             </div>
         @endforeach
     @endif
+    <div class="bottom"></div>
     <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-bar-rating/1.2.2/jquery.barrating.min.js"></script>
     <script>
-        $(function(){
+        $(function () {
+            $('#rate').barrating({
+                theme: 'fontawesome-stars',
+                allowEmpty: true,
+                initialRating:<?php echo (isset($detail->man_score)&&$detail->man_score!="")?$detail->man_score:-1; ?>,
+//                showSelectedRating: true,
+//                showValues: true,
+                hoverState: true,
+                onSelect: function (value, text, event) {
+                    if (typeof(event) !== 'undefined') {
+                        // rating was selected by a user
+                        console.log(value);
+                        console.log(event.target);
+                        var param = {};
+                        param.man_score = value;
+                        param._id = $("#rate").attr("data-id");
+                        man_score(param, "/qs-admin/company/man_score");
+                    } else {
+                        // rating was selected programmatically
+                        // by calling `set` method
+                    }
+                }
+            });
+//            $('select').barrating('clear');
             $(".key_edit").click(function () {
                 var title = $(this).parent(".content_wrap").find(".title a")[0].innerHTML;
                 window.location.href = encodeURI("/dailynews/key?key=" + title);
             });
+            function man_score(param, url) {
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: param,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        if (data.error == 0) {
+//                            alert("OK");
+                        } else {
+                            console.log(data);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
         })
 
     </script>

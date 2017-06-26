@@ -112,7 +112,7 @@
     }
 
     .r_c_list img {
-        width: auto;
+        width: 50px;
         height: 50px;
         border-radius: 50%;
     }
@@ -122,7 +122,17 @@
     }
 
     .c_des {
+        max-height: 65px;
+        display: block;
+        overflow: hidden;
+        margin: 10px 0;
+    }
 
+    .c_score {
+        position: absolute;
+        right: 20px;
+        font-size: 12px;
+        color: #48b3f6;
     }
 
     body {
@@ -250,7 +260,8 @@
     .knowledge_edit, .knowledge_delete {
         background: #f34b55;
     }
-    .content p{
+
+    .content p {
         line-height: 28px;
         letter-spacing: 1px;
         padding: 3px 20px;
@@ -258,6 +269,18 @@
 
     .morecon {
         cursor: pointer;
+    }
+
+    .person_list {
+        width: 21%;
+        margin-right: 1%;
+        float: left;
+    }
+
+    .person_avatar img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
     }
 
     @media (max-width: 748px) {
@@ -284,12 +307,22 @@
             padding: 30px 0;
 
         }
+
+        .c_score {
+            position: relative;
+            display: block;
+            text-align: right;
+        }
+
+        .person_list {
+            width: 48%;
+        }
     }
 
 </style>
 @section('content')
 
-            {{--{{dd($tag)}}--}}
+    {{--{{dd($tag)}}--}}
     {{--    {{Carbon\Carbon::today()->format("Y-m-d")}}--}}
     <?php
     $person = [];
@@ -340,89 +373,139 @@
     <div class="type_label">Related Research</div>
 
     <section id="cd-timeline" class="cd-container">
+        @if(isset($timeline)&&!empty($timeline))
+            @foreach($timeline as $K => $V)
+                @if(in_array("科研",$V->tags))
+                    @if(isset($V->person)&&$V->person!="")
+                        <?php $person[] = $V->person; ?>
+                    @endif
+                    <div class="cd-timeline-block">
+                        <div class="cd-timeline-img cd-picture">
+                            <img src="/img/cd-icon-picture.svg" alt="Picture">
+                        </div> <!-- cd-timeline-img -->
+
+                        <div class="cd-timeline-content">
+                            <h2></h2>
+
+                            <p class="excerpt">
+                            {{$V->excerpt}}
+                            <div class="gradient"></div>
+
+                            </p>
+
+                            <p>{{$V->title}}</p>
+
+                            <p>
+                                @if(!empty($V->tags))Tags:
+                                @foreach($V->tags as $k=>$v)
+                                    <a href="/timeline/tag/{{$v}}">{{$v}}</a>
+                                @endforeach
+                                @endif
+                                &nbsp;By:{{$V->users["name"]}}
+                            </p>
+                            <a href="{{$V->link}}" target="_blank" class="cd-read-more">Read more</a>
+                            <span class="cd-date">{{Carbon\Carbon::parse($V->created_at)->format("M,d,Y")}}</span>
+                        </div> <!-- cd-timeline-content -->
+                    </div> <!-- cd-timeline-block -->
+                    <?php  unset($timeline[$K]);?>
+
+                @endif
+            @endforeach
+        @endif
+    </section>
+    <div class="type_label">Related Corporate</div>
+    @if(isset($timeline)&&!empty($timeline))
         @foreach($timeline as $K => $V)
-            @if(in_array("科研",$V->tags))
+            @if(in_array("合作",$V->tags))
                 @if(isset($V->person)&&$V->person!="")
                     <?php $person[] = $V->person; ?>
                 @endif
-                <div class="cd-timeline-block">
-                    <div class="cd-timeline-img cd-picture">
-                        <img src="/img/cd-icon-picture.svg" alt="Picture">
-                    </div> <!-- cd-timeline-img -->
+                <?php $is_wuxu = array_intersect($wuxu, $V->tags); ?>
 
-                    <div class="cd-timeline-content">
-                        <h2></h2>
-
-                        <p class="excerpt">
-                        {{$V->excerpt}}
-                        <div class="gradient"></div>
-
-                        </p>
-
-                        <p>{{$V->title}}</p>
-
-                        <p>
-                            @if(!empty($V->tags))Tags:
-                            @foreach($V->tags as $k=>$v)
-                                <a href="/timeline/tag/{{$v}}">{{$v}}</a>
+                <div class="list">
+                    {{--            @if($V->updated_at > Carbon\Carbon::today()->subHours(6))--}}
+                    {{--<label class="latest">today</label>--}}
+                    @if(count($is_wuxu)>0)
+                        <label class="latest">
+                            @foreach($is_wuxu as $a=>$b)
+                                {{$b}}
                             @endforeach
-                            @endif
-                            &nbsp;By:{{$V->users["name"]}}
-                        </p>
-                        <a href="{{$V->link}}" target="_blank" class="cd-read-more">Read more</a>
-                        <span class="cd-date">{{Carbon\Carbon::parse($V->created_at)->format("M,d,Y")}}</span>
-                    </div> <!-- cd-timeline-content -->
-                </div> <!-- cd-timeline-block -->
-                <?php  unset($timeline[$K]);?>
+                        </label>
+                        {{--@endif--}}
+                    @endif
+                    <div class="date_wrap">
+                        <span class="news_date">{{$V->created_at}}</span>
+                    </div>
 
+                    <div class="content_wrap">
+                        <span class="des">{{$V->excerpt}}</span>
+                <span class="title">Origin:<a href="{{$V->link}}" target="_blank">{{$V->title}}</a>
+                    <span style="float: right;color: #d2d2d2">From:{{$V->source}}</span>
+                </span>
+                <span class="source_i">
+                    @if(!empty($V->tags))Tags:
+                    @foreach($V->tags as $k=>$v)
+                        <a href="/timeline/tag/{{$v}}">{{$v}}</a>
+                    @endforeach
+                    @endif
+                    </span>
+                        <span class="source_i">Editor:{{$V->users["name"]}}</span>
+                        {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
+                    </div>
+                </div>
+                <?php  unset($timeline[$K]);?>
             @endif
         @endforeach
-    </section>
-    <div class="type_label">Related Corporate</div>
-    @foreach($timeline as $K => $V)
-        @if(in_array("合作",$V->tags))
-            @if(isset($V->person)&&$V->person!="")
-                <?php $person[] = $V->person; ?>
-            @endif
-            <?php $is_wuxu = array_intersect($wuxu, $V->tags); ?>
-
-            <div class="list">
-                {{--            @if($V->updated_at > Carbon\Carbon::today()->subHours(6))--}}
-                {{--<label class="latest">today</label>--}}
-                @if(count($is_wuxu)>0)
-                    <label class="latest">
-                        @foreach($is_wuxu as $a=>$b)
-                            {{$b}}
-                        @endforeach
-                    </label>
-                    {{--@endif--}}
-                @endif
-                <div class="date_wrap">
-                    <span class="news_date">{{$V->created_at}}</span>
-                </div>
-
-                <div class="content_wrap">
-                    <span class="des">{{$V->excerpt}}</span>
-                <span class="title">Origin:<a href="{{$V->link}}" target="_blank">{{$V->title}}</a>
-                    <span style="float: right;color: #d2d2d2">From:{{$V->source}}</span>
-                </span>
-                <span class="source_i">
-                    @if(!empty($V->tags))Tags:
-                    @foreach($V->tags as $k=>$v)
-                        <a href="/timeline/tag/{{$v}}">{{$v}}</a>
-                    @endforeach
-                    @endif
-                    </span>
-                    <span class="source_i">Editor:{{$V->users["name"]}}</span>
-                    {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
-                </div>
-            </div>
-            <?php  unset($timeline[$K]);?>
-        @endif
-    @endforeach
+    @endif
     <div class="type_label">Related Funding</div>
-    @foreach($timeline as $K => $V)
-        @if(in_array("融资",$V->tags))
+    @if(isset($timeline)&&count($timeline)>0)
+
+        @foreach($timeline as $K => $V)
+
+            @if(in_array("融资",$V->tags))
+                @if(isset($V->person)&&$V->person!="")
+                    <?php $person[] = $V->person; ?>
+                @endif
+                <?php $is_wuxu = array_intersect($wuxu, $V->tags); ?>
+
+                <div class="list">
+                    {{--            @if($V->updated_at > Carbon\Carbon::today()->subHours(6))--}}
+                    {{--<label class="latest">today</label>--}}
+                    @if(count($is_wuxu)>0)
+                        <label class="latest">
+                            @foreach($is_wuxu as $a=>$b)
+                                {{$b}}
+                            @endforeach
+                        </label>
+                        {{--@endif--}}
+                    @endif
+                    <div class="date_wrap">
+                        <span class="news_date">{{$V->created_at}}</span>
+                    </div>
+
+                    <div class="content_wrap">
+                        <span class="des">{{$V->excerpt}}</span>
+                <span class="title">Origin:<a href="{{$V->link}}" target="_blank">{{$V->title}}</a>
+                    <span style="float: right;color: #d2d2d2">From:{{$V->source}}</span>
+                </span>
+                <span class="source_i">
+                    @if(!empty($V->tags))Tags:
+                    @foreach($V->tags as $k=>$v)
+                        <a href="/timeline/tag/{{$v}}">{{$v}}</a>
+                    @endforeach
+                    @endif
+                    </span>
+                        <span class="source_i">Editor:{{$V->users["name"]}}</span>
+                        {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
+                    </div>
+                </div>
+                <?php  unset($timeline[$K]);?>
+            @endif
+        @endforeach
+    @endif
+    <div class="type_label">Related Industry Info</div>
+    @if(isset($timeline)&&count($timeline)>0)
+        @foreach($timeline as $K => $V)
             @if(isset($V->person)&&$V->person!="")
                 <?php $person[] = $V->person; ?>
             @endif
@@ -458,51 +541,11 @@
                     <span class="source_i">Editor:{{$V->users["name"]}}</span>
                     {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
                 </div>
+
+
             </div>
-            <?php  unset($timeline[$K]);?>
-        @endif
-    @endforeach
-    <div class="type_label">Related Industry Info</div>
-    @foreach($timeline as $K => $V)
-        @if(isset($V->person)&&$V->person!="")
-            <?php $person[] = $V->person; ?>
-        @endif
-        <?php $is_wuxu = array_intersect($wuxu, $V->tags); ?>
-
-        <div class="list">
-            {{--            @if($V->updated_at > Carbon\Carbon::today()->subHours(6))--}}
-            {{--<label class="latest">today</label>--}}
-            @if(count($is_wuxu)>0)
-                <label class="latest">
-                    @foreach($is_wuxu as $a=>$b)
-                        {{$b}}
-                    @endforeach
-                </label>
-                {{--@endif--}}
-            @endif
-            <div class="date_wrap">
-                <span class="news_date">{{$V->created_at}}</span>
-            </div>
-
-            <div class="content_wrap">
-                <span class="des">{{$V->excerpt}}</span>
-                <span class="title">Origin:<a href="{{$V->link}}" target="_blank">{{$V->title}}</a>
-                    <span style="float: right;color: #d2d2d2">From:{{$V->source}}</span>
-                </span>
-                <span class="source_i">
-                    @if(!empty($V->tags))Tags:
-                    @foreach($V->tags as $k=>$v)
-                        <a href="/timeline/tag/{{$v}}">{{$v}}</a>
-                    @endforeach
-                    @endif
-                    </span>
-                <span class="source_i">Editor:{{$V->users["name"]}}</span>
-                {{--<span class="source">Editor:{{$V->companies["name"]}}</span>--}}
-            </div>
-
-
-        </div>
-    @endforeach
+        @endforeach
+    @endif
     <div class="type_label">Related Company</div>
     <?php
     $funds = [];
@@ -512,16 +555,18 @@
         <?php //$person[] = $cV["founder"];
         $funds[] = $cV["raiseFunds"];?>
         <div class="list">
-            @if($V->updated_at > Carbon\Carbon::today()->subHours(6))
+            @if($cV->updated_at > Carbon\Carbon::today()->subHours(6))
                 <label class="latest">today</label>
             @endif
 
             <div class="company_wrap">
                 <span class="r_c_list"><img src="{{$cV["avatar"]}}"></span>
                 <span class="r_c_list"><a href="/qs-admin/detail/{{$cV['id']}}">{{$cV["name"]}}</a></span>
+                <span class="r_c_list c_score">Qi Socre:{{$cV['qi_score']}}
+                    Complete Score:{{$cV['complete_score']}}</span>
                 <span class="r_c_list c_des">{{$cV["des"]}}</span>
             </div>
-            <div class="company_wrap">
+            <div class="company_wrap" style="font-size: 12px">
                 @if(isset($cV["raiseFunds"][0]))
                     最近一次融资发生在
                     <span class="r_c_list">{{$cV["raiseFunds"][0]["times"]}}</span>
@@ -536,27 +581,34 @@
     @endforeach
     <div class="type_label">Related Person</div>
     {{--    {{dd($person)}}--}}
-    @foreach($person as $cK => $cV)
-        @if(is_array($cV)&&!empty($cV))
-            @foreach($cV as $pk=>$pv)
-                {{--                {{dd($pv["name"])}}--}}
-                @if($pv!=""&&!empty($pv))
-                    <div class="list">
-                        <div class="company_wrap">
-                                    <span class="r_c_list"><a
-                                                href="/qs-admin/founder/{{$pv["_id"]}}">{{$pv["name"]}}</a></span>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        @elseif($cV!="")
-            {{--<div class="list">--}}
-            {{--<div class="company_wrap">--}}
-            {{--<span class="r_c_list"><a href="/qs-admin/person/{{$cV}}">{{$cV}}</a></span>--}}
-            {{--</div>--}}
-            {{--</div>--}}
-        @endif
-    @endforeach
+    {{--@foreach($person as $cK => $cV)--}}
+    {{--@if(is_array($cV)&&!empty($cV))--}}
+    {{--@foreach($cV as $pk=>$pv)--}}
+    {{--                {{dd($pv["name"])}}--}}
+    {{--@if($pv!=""&&!empty($pv))--}}
+    {{--<div class="list person_list">--}}
+    {{--<div class="company_wrap">--}}
+    {{--<span class="r_c_list"><a--}}
+    {{--href="/qs-admin/founder/{{$pv["_id"]}}">{{$pv["name"]}}</a></span>--}}
+    {{--</div>--}}
+    {{--</div>--}}
+    {{--@endif--}}
+    {{--@endforeach--}}
+    {{--@elseif($cV!="")--}}
+    {{--@endif--}}
+    {{--@endforeach--}}
+    {{--    {{dd($person_tag)}}--}}
+    @if(!empty($person_tag))
+        @foreach($person_tag as $cK => $cV)
+            <div class="list person_list">
+                <div class="company_wrap">
+                    <span class="person_avatar"><img src="{{$cV["avatar"]}}"/></span>
+                    <span class="r_c_list"><a href="/qs-admin/founder/{{$cV["_id"]}}">{{$cV["name"]}}</a></span>
+                </div>
+            </div>
+        @endforeach
+    @endif
+    <div style="clear: both;"></div>
     <div class="type_label">Related Clinical</div>
     <div class="list">
         <div class="company_wrap">

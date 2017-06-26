@@ -36,4 +36,6 @@ class DailyFundsController extends Controller
             $this->dispatch(new CheckFunding($v));
         }
     }
+
+
 }

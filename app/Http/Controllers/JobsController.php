@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Companies;
 use App\Jobs;
+use App\JobTopic;
 use App\Logs;
 use App\Tags;
 use App\DailyNews;
@@ -95,6 +96,7 @@ class JobsController extends Controller
     }
 
     public function index(){
-        return view("admin.jobs");
+        $jobs = JobTopic::orderby("updated_at","desc")->get();
+        return view("admin.jobs",["jobt"=>$jobs]);
     }
 }

@@ -79,7 +79,7 @@ class WechatCollectController extends Controller
                     $daily->link = $content_url;
                     $daily->source = $name;
                     $daily->pub_date = $datetime;
-                    $daily->company = "";
+                    $daily->company = [];
                     $daily->tags = [];
                     $daily->flag = 2;
                     $daily->isread = 0;
@@ -110,7 +110,7 @@ class WechatCollectController extends Controller
                             $daily->link = $content_url;
                             $daily->source = $name;
                             $daily->pub_date = $datetime;
-                            $daily->company = "";
+                            $daily->company = [];
                             $daily->tags = [];
                             $daily->flag = 2;
                             $daily->isread = 0;

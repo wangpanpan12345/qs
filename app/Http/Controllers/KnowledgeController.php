@@ -73,6 +73,7 @@ class KnowledgeController extends Controller
         }
         return $return;
     }
+
     /**
      * 移除一条知识罐头
      * @param Request $k
@@ -91,6 +92,15 @@ class KnowledgeController extends Controller
         return $return;
     }
 
+    public function show($name)
+    {
+        $knowledge = KnowledgeCanned::where("tags", $name)->get();
+        $result = [
+            "knowledge"=>$knowledge
+        ];
+        return view("admin.knowledge",$result);
+
+    }
 
 
 }

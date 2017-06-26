@@ -33,9 +33,12 @@ class CrawlMedia implements ShouldQueue
     public function handle(MediaBuilder $b)
     {
         //
-        $url = $this->builder["url"];
-        $func = $this->builder["func"];
-        $b->builder($url, $func);
+        foreach ($this->builder as $key => $value) {
+            $b->builder($value, $key);
+        }
+//        $url = $this->builder["url"];
+//        $func = $this->builder["func"];
+//        $b->builder($url, $func);
 
     }
 

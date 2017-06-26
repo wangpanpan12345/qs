@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Tags;
 use App\DailyNews;
+use App\Founders;
 use App\Http\Requests;
 use App\Companies;
 use Illuminate\Http\Request;
@@ -89,6 +90,7 @@ class TagController
 
     public function timeline($tag)
     {
+        $tag = urldecode($tag);
         $tt = Tags::where("name", "=", $tag)->whereIn("source", ["geekheal", "jianxiu"])->first();
         $tag_s = Tags::find($tt->id);
         $tag_a = [];
@@ -109,14 +111,16 @@ class TagController
                 }
             }
         }
+        $persons = Founders::whereIn('tags',$tag_a)->get(["_id","name","avatar"]);
         $_ids = array_unique($_ids);
-        $companys = Companies::whereIn("_id", $_ids)->get();
+        $companys = Companies::whereIn("_id", $_ids)->orWhereIn("tags",$tag_a)->get();
         $result = [
             "timeline" => $timeline_tag,
             "tag" => $tt,
             "knowledge_tag" => $knowledge_tag,
             "knowledge" => $tt->knowledge()->get(),
-            "companys" => $companys
+            "companys" => $companys,
+            "person_tag" => $persons
         ];
         return view("timeline_tag", $result);
 

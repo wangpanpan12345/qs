@@ -8,9 +8,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DailyFunds;
 use App\DailyNews;
 
 use App\Jobs\CrawlWeMedia;
+use App\Media\DealFund;
 use App\Tags;
 use Carbon\Carbon;
 use App\Companies;
@@ -76,6 +78,23 @@ class PhantomjsController extends Controller
             "deepmind" => "https://deepmind.com/blog/feed/basic/",
             "forbes" => "http://www.forbes.com/healthcare/",
 
+            "harvard_wyss" => "https://wyss.harvard.edu/news/",
+            "fredhutch" => "https://www.fredhutch.org/en/news.html",
+            "sanger_news" => "http://www.sanger.ac.uk/news",
+            "broadinstitute_news" => "https://www.broadinstitute.org/news",
+            "dana_farber" => "http://www.dana-farber.org/Newsroom/News-Releases.aspx",
+            "dana_farber_news" => "http://www.dana-farber.org/Newsroom/In-The-News.aspx",
+            "medschl" => "https://www.medschl.cam.ac.uk/category/schoolnews/research-news/",
+            "mdanderson" => "https://www.mdanderson.org/newsroom.html",
+            "mskcc" => "https://www.mskcc.org/blog",
+            "hopkinsmedicine" => "http://www.hopkinsmedicine.org/news/media/releases",
+            "stanford_med" => "http://med.stanford.edu/news/all-news.html",
+            "fda_news" => "https://www.fda.gov/NewsEvents/Newsroom/PressAnnouncements/default.htm",
+            "hsci_news" => "https://hsci.harvard.edu/hsci-news",
+            "mit_be" => "http://be.mit.edu/news-events/news",
+            "mit_wi" => "http://wi.mit.edu/news",
+            "mit_news" => "http://news.mit.edu/mit-news",
+
             //            "popsci" => "http://www.popsci.com/health",
             //            "newswise" => "http://www.newswise.com/articles/list?category=latest",
             //            "mdtmag" => "https://www.mdtmag.com/",
@@ -89,6 +108,7 @@ class PhantomjsController extends Controller
             "itjuzi_funding" => "https://www.itjuzi.com/investevents?scope=47",
             "itjuzi_funding_f" => "https://www.itjuzi.com/investevents?location=out&scope=47",
             "cyzone" => "http://www.cyzone.cn/event/list-764-3497-1-0-0-0-0/",
+//            "vcbeat" => "http://vcbeat.net/Index/Index/ajaxGetEvents"
         ];
     }
 
@@ -112,8 +132,20 @@ class PhantomjsController extends Controller
             "nature_nnano_research" => "http://www.nature.com/nnano/research/index.html",
             "nature_neuro_research" => "http://www.nature.com/neuro/research/index.html",
             "nature_neuro_news" => "http://www.nature.com/neuro/newsandcomment/index.html",
+            "nature_nrcardio" => "https://www.nature.com/nrcardio/current_issue/rss",
+            "nature_nrclinonc" => "https://www.nature.com/nrclinonc/current_issue/rss",
+            "nature_ncomms" => "https://www.nature.com/ncomms/articles",
+            "nature_nrc" => "https://www.nature.com/nrc/current_issue/rss",
+            "nature_leu" => "http://www.nature.com/leu/current_issue/rss/index.html",
+            "aacrjournals_clincancerres" => "http://clincancerres.aacrjournals.org/content/early/recent?utm_source=early&utm_medium=dropdown&utm_campaign=menu",
+            "aacrjournals_clincancerres1" => "http://clincancerres.aacrjournals.org/content/23/11?utm_source=current&utm_medium=dropdown&utm_campaign=menu&current-issue=y",
+            "aacrjournals_cancerdiscovery" => "http://cancerdiscovery.aacrjournals.org/content/7/6?utm_source=current&utm_medium=dropdown&utm_campaign=menu&current-issue=y",
+            "aacrjournals_cancerdiscovery1" => "http://cancerdiscovery.aacrjournals.org/content/early/by/section?utm_source=early&utm_medium=dropdown&utm_campaign=menu",
             "cell" => "http://www.cell.com/cell/newarticles",
             "cell_current" => "http://www.cell.com/cell/current",
+            "cell_metabolism" => "http://www.cell.com/cell-metabolism/issue?pii=S1550-4131(16)X0007-1",
+            "sciencemag" => "http://science.sciencemag.org/",
+            "sciencemag_immunology" => "http://immunology.sciencemag.org",
             "sciencemag_news" => "http://www.sciencemag.org/news/latest-news",
             "sciencemag_advances" => "http://advances.sciencemag.org/",
             "sciencemag_robotics" => "http://robotics.sciencemag.org/",
@@ -137,7 +169,7 @@ class PhantomjsController extends Controller
             "cell_neurosciences" => "http://www.cell.com/trends/neurosciences/newarticles",
 //            "brain_sciences " => "https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/latest-issue",
             "gastrojournal" => "http://www.gastrojournal.org/current.rss",
-            "annals_surgery" => "http://www.gastrojournal.org/current",
+//            "annals_surgery" => "http://journals.lww.com/annalsofsurgery/pages/default.aspx",
             "jbjsjournal" => "http://journals.lww.com/jbjsjournal/_layouts/15/OAKS.Journals/feed.aspx?FeedType=CurrentIssue",
 
         ];
@@ -217,7 +249,7 @@ class PhantomjsController extends Controller
 //            "gcyuanshi" => "http://www.cae.cn/cae/jsp/qtysmd.jsp?ColumnID=135",
 //            "kxyuanshi" => "http://www.casad.cas.cn/chnl/374/index.html",
 //            "qrjh_1" => "http://www.1000plan.org/wiki/index.php?category-view-13-1",
-                "fellowplus"=>"https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=6&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D",
+            "fellowplus" => "https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=6&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D",
         ];
     }
 
@@ -234,15 +266,24 @@ class PhantomjsController extends Controller
 //        foreach ($expert as $key => $value) {
 //            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
 //        }
-        for($i=7;$i<355;$i++){
-            $this->dispatch(new CrawlMedia(array("url" => "https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=".$i."&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D", "func" => "fellowplus")));
-        }
+//        for($i=7;$i<355;$i++){
+//            $this->dispatch(new CrawlMedia(array("url" => "https://api.fellowplus.com/v2/projects/list?trade_name=%E5%8C%BB%E7%96%97%E5%81%A5%E5%BA%B7&page_num=".$i."&web_token=8wOweXLK6YLb5GEDQIhZKzCuqkb7SU8S5SN9GLJtbsA%3D", "func" => "fellowplus")));
+//        }
+        $this->dispatch((new CrawlMedia($medias)));
+        $this->dispatch((new CrawlMedia($journal)));
+        $this->dispatch((new CrawlMedia($funds)));
+        $this->dispatch((new CrawlMedia($policy)));
+
 
 //        foreach ($medias as $key => $value) {
-//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//            echo $key;
+//            $this->parase_log($key);
+//            $this->dispatch((new CrawlMedia(array("url" => $value, "func" => $key)))->onQueue('processing'));
 //        }
 //        foreach ($funds as $key => $value) {
-//            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
+//            echo $key;
+//            $this->parase_log($key);
+//            $this->dispatch((new CrawlMedia(array("url" => $value, "func" => $key)))->onQueue('funding'));
 //        }
 //        foreach ($journal as $key => $value) {
 //            $this->dispatch(new CrawlMedia(array("url" => $value, "func" => $key)));
@@ -261,8 +302,17 @@ class PhantomjsController extends Controller
 
         $limit = 60;
         $projections = ['*'];
+        $today_begin = Carbon::today()->subHours(6);
+        $today_end = Carbon::today()->addHour(18);
+//        $dailynews_pub = DailyNews::where("flag", 1)
+//            ->where("is_pub", 1)
+//            ->where('updated_at', '>', $today_begin)
+//            ->where('updated_at', '<', $today_end)
+//            ->orderBy('created_at', 'desc');
+
+
         $dailynews = DailyNews::where("flag", 1)->orderBy('created_at', 'desc')->paginate($limit, $projections);
-//        dd($dailynews);
+
         return view('admin.dailylist', array('dn' => $dailynews));
     }
 
@@ -430,7 +480,49 @@ class PhantomjsController extends Controller
             $return = ['error' => 0, 'result' => $o];
         }
         return $return;
+    }
 
+    /**
+     * 每日新闻页面,一次更新所有关联
+     * @param Request $r
+     * @return array
+     */
+    public function up_all(Request $r)
+    {
+        $_id = $r["_id"];
+        $dailynews = DailyNews::find($_id);
+        $tags = $r["tags"];
+        if (empty($tags)|| is_null($tags))
+            $tags = [];
+        $person = $r["person"];
+        if (empty($person) || is_null($person))
+            $person = [];
+        $company = $r["company"];
+        if (empty($company) || is_null($company))
+            $company = [];
+        $excerpt = $r["excerpt"];
+//        if (!empty($tags)) {
+        $dailynews->tags = $tags;
+//        }
+//        if (!empty($person)) {
+        $dailynews->person = $person;
+//        }
+//        if (!empty($company)) {
+        $dailynews->company = $company;
+//        }
+        if ($excerpt != "" && $excerpt != null) {
+            $dailynews->excerpt = $excerpt;
+            $dailynews->is_pub = 1;
+            $dailynews->user_id = Auth::user()->id;
+        }
+        $o = $dailynews->save();
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            event(new \App\Events\PubState(Auth::user()->id, $_id));
+            $return = ['error' => 0, 'result' => $o];
+        }
+        return $return;
     }
 
     /**
@@ -469,6 +561,53 @@ class PhantomjsController extends Controller
     }
 
     /**
+     * 给会员分享的精选
+     * @param Request $r
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function key_news_shared(Request $r)
+    {
+        $_id = $r["_id"];
+        $_title = $r["title"];
+        $k_news = DailyNews::find($_id);
+        $k_news->share_title = $_title;
+        $k_news->shared = "1";
+        $o = $k_news->save();
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
+        return $return;
+
+    }
+
+    /**
+     * 给会员分享的精选每日集合
+     * @param Request $r
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function key_news_shared_list($date)
+    {
+        if (strpos($date, "_") == false)
+            abort(404);
+        $auth = explode("_", $date);
+        $date = $auth[1];
+        if ($auth[0] != md5($date . "geekqs"))
+            abort(404);
+        $today_begin = Carbon::parse($date, "Asia/shanghai")->subHours(4);
+        $today_end = Carbon::parse($date, "Asia/shanghai")->addHour(20);
+//        dd($today_begin,$today_end);
+        $key_news = DailyNews::where("is_pub", "=", 1)
+            ->where("shared", "1")
+            ->where('updated_at', '>', $today_begin)
+            ->where('updated_at', '<', $today_end)
+            ->get();
+        return view("member_news", ["info" => $key_news, "date" => $date]);
+    }
+
+
+    /**
      * 每日精选新闻列表(按作者)
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -478,6 +617,18 @@ class PhantomjsController extends Controller
         $projections = ['*'];
         $key_news = DailyNews::where("is_pub", "=", 1)->where("user_id", $author)->orderby("created_at", "desc")->paginate($limit, $projections);
         return view("admin.keynews", ["keynews" => $key_news, 'author' => $author]);
+    }
+
+    public function get_one(Request $r)
+    {
+        $_id = $r["_id"];
+        $do = DailyNews::find($_id);
+        if (empty($do)) {
+            $return = ['error' => 1, 'result' => $do];
+        } else {
+            $return = ['error' => 0, 'result' => $do];
+        }
+        return $return;
     }
 
 
@@ -562,8 +713,25 @@ class PhantomjsController extends Controller
     public function collect(Request $r)
     {
         $check = UserCollects::where("cid", $r["_id"])->where("user", Auth::user()->id)->get();
-        if (count($check)>0) {
-            $return = ['error' => 5, 'result' => $check];
+        if (count($check) > 0) {
+            if ($check[0]->flag == 0) {
+                $check = $check[0];
+                $check->flag = 1;
+                $o = $check->save();
+                $dn = DailyNews::find($r["_id"]);
+                $cuser = (isset($dn->cuser)) ? $dn->cuser : [];
+                array_push($cuser, Auth::user()->id);
+                $dn->cuser = array_unique($cuser);
+                $dn->save();
+                if (!$o) {
+                    $return = ['error' => 1, 'result' => $dn->cuser];
+                } else {
+                    $return = ['error' => 0, 'result' => $dn->cuser];
+                }
+            } else {
+                $return = ['error' => 5, 'result' => $check];
+            }
+
         } else {
             $collect = new UserCollects();
             $collect->cid = $r["_id"];
@@ -572,9 +740,36 @@ class PhantomjsController extends Controller
             $collect->flag = 1;
             $o = $collect->save();
             $dn = DailyNews::find($r["_id"]);
-            $cuser = (isset($dn->cuser))?$dn->cuser:[];
-            array_push($cuser,Auth::user()->id);
+            $cuser = (isset($dn->cuser)) ? $dn->cuser : [];
+            array_push($cuser, Auth::user()->id);
             $dn->cuser = array_unique($cuser);
+            $dn->save();
+            if (!$o) {
+                $return = ['error' => 1, 'result' => $dn->cuser];
+            } else {
+                $return = ['error' => 0, 'result' => $dn->cuser];
+            }
+        }
+        return $return;
+
+    }
+
+    public function cancel_collect(Request $r)
+    {
+        $check = UserCollects::where("cid", $r["cid"])->where("user", Auth::user()->id)->get();
+        if (count($check) == 0) {
+            $return = ['error' => 5, 'result' => $check];
+        } else {
+            $check = $check[0];
+            $check->flag = 0;
+            $o = $check->save();
+            $dn = DailyNews::find($r["cid"]);
+            $cuser = (isset($dn->cuser)) ? $dn->cuser : [];
+            foreach ($cuser as $key => $value) {
+                if ($value === Auth::user()->id)
+                    unset($cuser[$key]);
+            }
+            $dn->cuser = $cuser;
             $dn->save();
             if (!$o) {
                 $return = ['error' => 1, 'result' => $dn->cuser];
@@ -603,6 +798,34 @@ class PhantomjsController extends Controller
         dd($D);
     }
 
+    public function today_news()
+    {
+        $today_begin = Carbon::today()->subHours(6);
+        $today_end = Carbon::today()->addHour(18);
+        $news = DailyNews::where('created_at', '>', $today_begin)
+            ->where('created_at', '<', $today_end)
+            ->get(["title"]);
+        foreach ($news as $k => $v) {
+            $this->parase_log("u'" . $v->title . "',");
+        }
+
+    }
+
+    public function parase_log($pam = '')
+    {
+        $fp = fopen("/usr/local/laravel/storage/app/order_num.txt", "a+"); //文件被清空后再写入
+//        $fp = fopen("/usr/local/laravel/storage/app/news_dict.txt", "a+"); //文件被清空后再写入
+        if ($fp) {
+            $flag = fwrite($fp, $pam . "\r\n");
+            if (!$flag) {
+                echo "写入文件失败<br>";
+            }
+        } else {
+            echo "打开文件失败";
+        }
+        fclose($fp);
+    }
+
 
     /**
      * @param $html
@@ -624,4 +847,71 @@ class PhantomjsController extends Controller
 
     }
 
+    public function get_vcbeat()
+    {
+        $ch = curl_init();
+        $url = "http://vcbeat.net/Index/Index/ajaxGetEvents";
+//        curl_setopt($ch, CURLOPT_URL, "http://vcbeat.net/Index/Index/ajaxGetEvents");
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json; charset=utf-8',
+            )
+        );
+        $output = curl_exec($ch);
+//        preg_replace("/{/","{",$output);
+        $output = mb_substr($output, 1, -1) . "}";
+//        $t = mb_substr($output,1,1);
+//        $output = "'".$output."'";
+//        preg_replace("/(\s+)/", '', $output);
+        echo $output;
+//        dd();
+        $output_array = json_decode($output, true);
+//        echo $errorinfo = json_last_error();  ;
+        curl_close($ch);
+//        var_dump($output);
+        $data = $output_array["data"];
+        $this->in_fund_vcbeat($data);
+
+    }
+
+    public function in_fund_vcbeat($data)
+    {
+        foreach ($data as $k => $v) {
+            $is_exist = DailyFunds::where('company_df', 'like', '%' . $v["short_name"] . '%')->count();
+//            var_dump($is_exist);
+            if ($is_exist) {
+
+            } else {
+                $daily = new DailyFunds();
+                $daily->company_df = $v["short_name"];
+                $daily->link = "";
+                $daily->source = "vcbeat";
+                $daily->pub_date_f = Carbon::createFromFormat('Y-m-d', $v["event_time"]);
+                $daily->amount = $v["amount"] . $v["unit"];
+                $daily->round = $v["name"];
+                $daily->invest = [];
+                $daily->flag = 1;
+                $daily->isread = 0;
+                $daily->is_pub = 0;
+                $daily->priority = isset($dn["priority"]) ? $dn["priority"] : 9;
+//                dd($daily);
+                $status = $daily->save();
+//                dd($status);
+            }
+        }
+    }
+
+    public function show_all_source()
+    {
+        $all_media = $this->media_array();
+        $all_policy = $this->policy_array();
+        $all_journal = $this->journal_array();
+
+        return view("admin.source", ["media" => $all_media,
+            "policy" => $all_policy,
+            "journal" => $all_journal]);
+    }
 }

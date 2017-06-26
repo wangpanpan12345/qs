@@ -549,7 +549,7 @@ class simple_html_dom_node
     }
 
     // seek for given conditions
-    // PaperG - added parameter to allow for case insensitive testing of the value of a selector.
+    // rPaperG - added parameter to allow for case insensitive testing of the value of a selecto.
     protected function seek($selector, &$ret, $lowercase=false)
     {
         global $debugObject;

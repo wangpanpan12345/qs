@@ -23,6 +23,11 @@ class MediaBuilder
         "gastrojournal",
         "jbjsjournal",
         "fellowplus",
+        "nature_nrcardio",
+        "nature_nrclinonc",
+        "nature_nrc",
+        "nature_leu",
+
     ];
 
     public function builder($url = "", $func = "")
@@ -42,7 +47,7 @@ class MediaBuilder
 
         $client->getEngine()->setPath('/usr/local/bin/phantomjs');
         $timeout = 30000;
-        $delay = 90;
+        $delay = 60;
 
         /**
          * @see JonnyW\PhantomJs\Http\CaptureRequest
@@ -88,11 +93,15 @@ class MediaBuilder
 
         $client->send($request, $response);
 //        echo $response->getContent();
+
         $html = str_get_html($response->getContent());
+
+//        echo $response->getStatus();
         if ($response->getStatus() == 200) {
             call_user_func(array($this, $func), $html);
         } elseif ($response->getStatus() == 408 || $response->getStatus() == 301 || $response->getStatus() == 302 || $response->getStatus() == 307) {
 //            $this->parase_log($response->getStatus());
+//            echo $this.$func;
             call_user_func(array($this, $func), $html);
         } else {
 //            call_user_func(array($this, $func), $html);
@@ -1036,12 +1045,352 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save($indb);
         }
         $this->parase_log("deepmind-" . Carbon::now()->toDateTimeString());
+    }
+
+    //
+    public function harvard_wyss($html)
+    {
+        $indb = array();
+        foreach ($html->find(".list-news-related__item") as $list) {
+            $link = $list->find("a.list-news-related__link", 0)->href;
+            $title = $list->find(".list-news-related__title", 0)->innertext;
+            $time = $list->find(".list-news-related__date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "harvard_wyss";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("harvard_wyss-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function fredhutch($html)
+    {
+        $indb = array();
+        foreach ($html->find(".newsroll-item") as $list) {
+            $link = "https://www.fredhutch.org" . $list->find(".news-title a", 0)->href;
+            $title = $list->find(".news-title a", 0)->innertext;
+            $time = $list->find(".news-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "fredhutch";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("fredhutch-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function sanger_news($html)
+    {
+        $indb = array();
+        try {
+            foreach ($html->find(".topline-photo-story,.photo-feature-box") as $list) {
+                $link = "http://www.sanger.ac.uk" . $list->find("h4 a", 0)->href;
+                $title = $list->find("h4 a", 0)->innertext;
+                $time = $list->find(".date-display-single", 0)->innertext;
+                $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+                $source = "sanger_news";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = $time;
+                $indb["source"] = $source;
+//            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+                $this->save($indb);
+            }
+        } catch (\Exception $e) {
+
+        }
+        $this->parase_log("sanger_news-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function broadinstitute_news($html)
+    {
+        $indb = array();
+        foreach ($html->find(".views-row") as $list) {
+            $link = "https://www.broadinstitute.org" . $list->find(".views-field-title .field-content a", 0)->href;
+            $title = $list->find(".views-field-title .field-content a", 0)->innertext;
+            $time = $list->find(".views-field-created span", 0)->innertext;
+            $time = explode("/", $time);
+            $time = Carbon::createFromFormat("m.d.y", trim($time[1]))->format('Y-m-d H:i');;
+            $source = "broadinstitute_news";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 9;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("broadinstitute_news-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function dana_farber($html)
+    {
+        $indb = array();
+        foreach ($html->find(".newsItem") as $list) {
+            $link = "http://www.dana-farber.org" . $list->find(".title a", 0)->href;
+            $title = $list->find(".title a", 0)->innertext;
+            $time = $list->find(".date li", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "dana_farber";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("dana_farber-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function dana_farber_news($html)
+    {
+        $indb = array();
+        foreach ($html->find(".newsItem") as $list) {
+            $link = "http://www.dana-farber.org" . $list->find(".title a", 0)->href;
+            $title = $list->find(".title a", 0)->innertext;
+            $time = $list->find(".date li", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "dana_farber";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("dana_farber_news-" . Carbon::now()->toDateTimeString());
+    }
+
+
+    public function medschl($html)
+    {
+        $indb = array();
+        foreach ($html->find("article.status-publish") as $list) {
+            $link = $list->find("h2.entry-title a", 0)->href;
+            $title = $list->find("h2.entry-title a", 0)->innertext;
+            $time = $list->find("time.entry-time", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "medschl";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("medschl-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function mdanderson($html)
+    {
+        $indb = array();
+        foreach ($html->find(".blog-summary-wrapper") as $list) {
+
+            $title = $list->find(".blog-title a", 0)->innertext;
+            $time = $list->find(".author-date", 0)->innertext;
+            if ($time == "") {
+                $link = "https://www.mdanderson.org" . $list->find(".blog-title a", 0)->href;
+                $time = Carbon::now()->format('Y-m-d H:i');
+            } else {
+                $link = $list->find(".blog-title a", 0)->href;
+                $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            }
+            $source = "mdanderson";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("mdanderson-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function mskcc($html)
+    {
+        $indb = array();
+        foreach ($html->find(".views-row") as $list) {
+            $link = "https://www.mskcc.org" . $list->find("a.bbc-link", 0)->href;
+            $title = $list->find("a.bbc-link", 0)->innertext;
+            $time = $list->find(".bbc-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "mskcc";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("mskcc-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function hopkinsmedicine($html)
+    {
+        $indb = array();
+        foreach ($html->find(".itemBlock") as $list) {
+            $link = "http://www.hopkinsmedicine.org" . $list->find(".prHead a", 0)->href;
+            $title = $list->find(".prHead a", 0)->innertext;
+            $time = $list->find(".prDate .Copy", 0)->innertext;
+            $time = explode(":", $time);
+            $time = Carbon::createFromTimestamp(strtotime(trim($time[1])))->format('Y-m-d H:i');
+            $source = "hopkinsmedicine";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("hopkinsmedicine-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function stanford_med($html)
+    {
+        $indb = array();
+        foreach ($html->find(".newsfeed-item") as $list) {
+            $link = "http://med.stanford.edu" . $list->find("a", 0)->href;
+            $title = $list->find("h3.newsfeed-item-title", 0)->innertext;
+            $time = $list->find("time", 0)->datetime;
+            $time = Carbon::parse($time)->format('Y-m-d H:i');
+            $source = "stanford_med";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("stanford_med-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function fda_news($html)
+    {
+        $indb = array();
+        $first = $html->find(".panel-default", 0);
+        foreach ($first->find("li") as $list) {
+            $link = "https://www.fda.gov" . $list->find("a", 0)->href;
+            $title = $list->find("a", 0)->innertext;
+            $time = $list->plaintext;
+            $time = explode("-", $time);
+            $time = Carbon::createFromTimestamp(strtotime(trim($time[0])))->format('Y-m-d H:i');
+            $source = "fda_news";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("fda_news-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function hsci_news($html)
+    {
+        $indb = array();
+        foreach ($html->find("article.node-news") as $list) {
+            $link = $list->find(".node-title a", 0)->href;
+            $title = $list->find(".node-title a", 0)->innertext;
+            $time = $list->find("span.date-display-single", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "hsci_news";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("hsci_news-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function mit_be($html)
+    {
+        $indb = array();
+        foreach ($html->find(".views-row") as $list) {
+            $link = $list->find(".views-field-field-news-title .field-content a", 0)->href;
+            $title = $list->find(".views-field-field-news-title .field-content a", 0)->innertext;
+            $time = $list->find("span.date-display-single", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "mit_be";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("mit_be-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function mit_wi($html)
+    {
+        $indb = array();
+        foreach ($html->find(".divnewsitem") as $list) {
+            $link = $list->find(".title a", 0)->href;
+            $title = $list->find(".title a", 0)->innertext;
+            $time = $list->find("span.date-display-single", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "mit_wi";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("mit_wi-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function mit_news($html)
+    {
+        $indb = array();
+        foreach ($html->find("ul.view-mit-news li") as $list) {
+            $link = "http://news.mit.edu" . $list->find("a", 0)->href;
+            $title = $list->find("h3", 0)->innertext;
+            $time = $list->find(".date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "mit_news";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("mit_news-" . Carbon::now()->toDateTimeString());
     }
 
 
@@ -1461,6 +1810,205 @@ class MediaBuilder
         $this->parase_log("nature_neuro_news-" . Carbon::now()->toDateTimeString());
     }
 
+    public function nature_nrcardio($html)
+    {
+        $indb = array();
+//        echo $html;
+        foreach ($html->find("item") as $list) {
+            $link = $list->find("prism:url", 0)->innertext;
+            $title = $list->find("title", 0)->innertext;
+            $time = $list->find("dc:date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "nature_nrcardio";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("nature_nrcardio-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function nature_nrclinonc($html)
+    {
+        $indb = array();
+//        echo $html;
+        foreach ($html->find("item") as $list) {
+            $link = $list->find("prism:url", 0)->innertext;
+            $title = $list->find("title", 0)->innertext;
+            $time = $list->find("dc:date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "nature_nrclinonc";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("nature_nrclinonc-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function nature_ncomms($html)
+    {
+        $indb = array();
+//        echo $html;
+        foreach ($html->find("ul.ma0 li.pb40 ") as $list) {
+            $link = "https://www.nature.com" . $list->find("h3.mb10 a", 0)->href;
+            $title = $list->find("h3.mb10 a", 0)->plaintext;
+            $time = $list->find("time", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "nature_ncomms";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            echo $link . $title . $time . "<br>";
+//            $this->parase_log($link . $title . $time);
+            $this->save($indb);
+        }
+        $this->parase_log("nature_ncomms-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function nature_nrc($html)
+    {
+        $indb = array();
+//        echo $html;
+        foreach ($html->find("item") as $list) {
+            $link = $list->find("prism:url", 0)->innertext;
+            $title = $list->find("title", 0)->innertext;
+            $time = $list->find("dc:date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "nature_nrc";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("nature_nrc-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function nature_leu($html)
+    {
+        $indb = array();
+//        echo $html;
+        foreach ($html->find("item") as $list) {
+            $link = $list->find("prism:url", 0)->innertext;
+            $title = $list->find("title", 0)->innertext;
+            $time = $list->find("dc:date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "nature_leu";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("nature_leu-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function aacrjournals_clincancerres($html)
+    {
+        $indb = array();
+        $first = $html->find(".highwire-list-wrapper", 0);
+        foreach ($first->find("article.highwire-cite") as $list) {
+            $link = "http://clincancerres.aacrjournals.org" . $list->find(".article-title a", 0)->href;
+
+            $title = $list->find(".article-title a", 0)->plaintext;
+            $time = $list->find(".highwire-cite-metadata-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "aacrjournals_clincancerres";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("aacrjournals_clincancerres-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function aacrjournals_clincancerres1($html)
+    {
+        $indb = array();
+
+        foreach ($html->find(".toc-section li") as $list) {
+            $link = "http://clincancerres.aacrjournals.org" . $list->find(".article-title a", 0)->href;
+
+            $title = $list->find(".article-title a", 0)->plaintext;
+            $time = $list->find(".highwire-cite-metadata-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "aacrjournals_clincancerres";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("aacrjournals_clincancerres-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function aacrjournals_cancerdiscovery($html)
+    {
+        $indb = array();
+        foreach ($html->find(".toc-section li") as $list) {
+            $link = "http://cancerdiscovery.aacrjournals.org" . $list->find(".article-title a", 0)->href;
+            $title = $list->find(".article-title a", 0)->plaintext;
+            $time = $list->find(".highwire-cite-metadata-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "aacrjournals_cancerdiscovery";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("aacrjournals_cancerdiscovery-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function aacrjournals_cancerdiscovery1($html)
+    {
+        $indb = array();
+        foreach ($html->find("#news-in-brief li,#research-articles li,#research-briefs li,#research-watch li") as $list) {
+            $link = "http://cancerdiscovery.aacrjournals.org" . $list->find(".article-title a", 0)->href;
+            $title = $list->find(".article-title a", 0)->plaintext;
+            $time = $list->find(".highwire-cite-metadata-date", 0)->innertext;
+            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+            $source = "aacrjournals_cancerdiscovery";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            $this->parase_log($link . $title . $time);
+//            echo $link . $title . $time . "<br/>";
+            $this->save($indb);
+        }
+        $this->parase_log("aacrjournals_cancerdiscovery-" . Carbon::now()->toDateTimeString());
+    }
+
+
     /**
      * http://www.cell.com/cell/newarticles
      * @param $html
@@ -1507,6 +2055,111 @@ class MediaBuilder
         }
         $this->parase_log("cell_current-" . Carbon::now()->toDateTimeString());
     }
+
+    public function cell_metabolism($html)
+    {
+        $indb = array();
+        $time = $html->find("h1.headings .date", 0)->innertext;
+        $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+        foreach ($html->find("ul.articleCitations .articleCitation") as $list) {
+            $link = "http://www.cell.com" . $list->find("h3.title a", 0)->href;
+            $title = $list->find("h3.title a", 0)->plaintext;
+            $source = "cell";
+            $indb["title"] = trim($title);
+            $indb["link"] = $link;
+            $indb["time"] = $time;
+            $indb["source"] = $source;
+            $indb["priority"] = 1;
+//            echo $link . $title . $time . "</br>";
+//            $this->parase_log($link . $title );
+            $this->save($indb);
+        }
+        $this->parase_log("cell_metabolism-" . Carbon::now()->toDateTimeString());
+    }
+
+    public function sciencemag($html)
+    {
+        $indb = array();
+        try {
+            foreach ($html->find("li.owl-item") as $top) {
+                $link = "http://www.sciencemag.org" . $top->find("h2.hero__headline a", 0)->href;
+                $title = $top->find("h2.hero__headline", 0)->plaintext . "-" . $top->find("p.hero__teaser", 0)->plaintext;
+//                $time = $top->find("time", 0)->innertext;
+//                $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+                $source = "sciencemag";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = "";
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
+//                echo $link . $title ."</br>";
+                $this->save($indb);
+            }
+
+            foreach ($html->find("ul.issue-toc li.toc-item") as $list) {
+                $link = "http://www.sciencemag.org" . $list->find("h3.media__headline a", 0)->href;
+                $title = $list->find("h3.media__headline a", 0)->plaintext;
+                $time = $list->find("time", 0)->innertext;
+                $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+                $source = "sciencemag";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = $time;
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
+//                echo $link . $title . $time."</br>";
+//            $this->parase_log($link . $title . $time);
+                $this->save($indb);
+            }
+        } catch (\Exception $e) {
+
+        }
+
+        $this->parase_log("sciencemag-" . Carbon::now()->toDateTimeString());
+
+    }
+
+    public function sciencemag_immunology($html)
+    {
+        $indb = array();
+        try {
+            foreach ($html->find("li.owl-item") as $top) {
+                $link = $top->find("h2.hero__headline a", 0)->href;
+                $title = $top->find("h2.hero__headline", 0)->plaintext . "-" . $top->find("p.hero__teaser", 0)->plaintext;
+//                $time = $top->find("time", 0)->innertext;
+                $source = "sciencemag_immunology";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = "";
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
+//                echo $link . $title . "</br>";
+                $this->save($indb);
+            }
+
+            foreach ($html->find("ul.issue-toc li.toc-item") as $list) {
+                $link = "http://immunology.sciencemag.org" . $list->find("h3.media__headline a", 0)->href;
+                $title = $list->find("h3.media__headline a", 0)->plaintext;
+                $time = $list->find("time", 0)->innertext;
+                $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
+                $source = "sciencemag_immunology";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = $time;
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
+//                echo $link . $title . $time . "</br>";
+//            $this->parase_log($link . $title . $time);
+                $this->save($indb);
+            }
+        } catch (\Exception $e) {
+
+        }
+
+        $this->parase_log("sciencemag_immunology-" . Carbon::now()->toDateTimeString());
+
+    }
+
 
     /**
      * http://www.sciencemag.org/news/latest-news
@@ -1646,20 +2299,28 @@ class MediaBuilder
     public function nejm_toc($html)
     {
         $indb = array();
-        foreach ($html->find(".articleGrouping .articleEntry") as $list) {
-            $link = "http://www.nejm.org" . $list->find(".articleLink a", 0)->href;
-            $title = $list->find(".articleLink a", 0)->plaintext;
-            $time = Carbon::now()->format('Y-m-d H:i');
+        try {
+
+            foreach ($html->find(".articleGrouping .articleEntry") as $list) {
+                $link = "http://www.nejm.org" . $list->find(".articleLink a", 0)->href;
+                $title = $list->find(".articleLink a", 0)->plaintext;
+                $time = Carbon::now()->format('Y-m-d H:i');
 //            $time = Carbon::createFromTimestamp(strtotime(trim($time)))->format('Y-m-d H:i');
-            $source = "nejm";
-            $indb["title"] = trim($title);
-            $indb["link"] = $link;
-            $indb["time"] = $time;
-            $indb["source"] = $source;
-            $indb["priority"] = 1;
+                $source = "nejm";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = $time;
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
+//                echo $link . $title . $time."<br>";
 //            $this->parase_log($link . $title . $time);
-            $this->save($indb);
+                $this->save($indb);
+            }
+
+        } catch (\Exception $e) {
+
         }
+
         $this->parase_log("nejm_toc-" . Carbon::now()->toDateTimeString());
     }
 
@@ -1671,21 +2332,26 @@ class MediaBuilder
     public function thelancet_news($html)
     {
         $indb = array();
-        foreach ($html->find("ul.articleCitations .articleCitation") as $list) {
-            $link = "http://www.thelancet.com" . $list->find("h4.title a", 0)->href;
-            $title = $list->find("h4.title a", 0)->plaintext;
-            $time = $list->find(".published-online", 0)->innertext;
-            $time = explode(":", $time);
-            $time = Carbon::createFromTimestamp(strtotime(trim($time[1])))->format('Y-m-d H:i');
-            $source = "thelancet_news";
-            $indb["title"] = trim($title);
-            $indb["link"] = $link;
-            $indb["time"] = $time;
-            $indb["source"] = $source;
-            $indb["priority"] = 1;
+        try {
+            foreach ($html->find("ul.articleCitations .articleCitation") as $list) {
+                $link = "http://www.thelancet.com" . $list->find("h4.title a", 0)->href;
+                $title = $list->find("h4.title a", 0)->plaintext;
+                $time = $list->find(".published-online", 0)->innertext;
+                $time = explode(":", $time);
+                $time = Carbon::createFromTimestamp(strtotime(trim($time[1])))->format('Y-m-d H:i');
+                $source = "thelancet_news";
+                $indb["title"] = trim($title);
+                $indb["link"] = $link;
+                $indb["time"] = $time;
+                $indb["source"] = $source;
+                $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
-            $this->save($indb);
+                $this->save($indb);
+            }
+        } catch (\Exception $e) {
+
         }
+
         $this->parase_log("thelancet_news-" . Carbon::now()->toDateTimeString());
     }
 
@@ -2103,7 +2769,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save($indb);
@@ -2116,7 +2782,7 @@ class MediaBuilder
         $indb = array();
 //        var_dump($html);
         foreach ($html->find("item") as $list) {
-            try{
+            try {
 
                 $id = $list->find("id", 0)->innertext;
                 $fid = $list->find("fellow_data_id", 0)->innertext;
@@ -2132,18 +2798,16 @@ class MediaBuilder
                 $money = $list->find("funding_money", 0)->innertext;
                 $ftime = $list->find("funding_time", 0)->innertext;
 
-                $C = Companies::where("name","like","%".$name."%")->get();
-                if(count($C)==0){
-                    $link = "https://fellowplus.com/data/index.html#!/main/project/".$ulink."/0/0";
-                    $this->parase_log($link,"fellow");
+                $C = Companies::where("name", "like", "%" . $name . "%")->get();
+                if (count($C) == 0) {
+                    $link = "https://fellowplus.com/data/index.html#!/main/project/" . $ulink . "/0/0";
+                    $this->parase_log($link, "fellow");
 //                    var_dump($name);
                 }
 
-            }
-            catch(\Exception $e){
+            } catch (\Exception $e) {
 
             }
-
 
 
 //            $this->parase_log($link . $title . $time);
@@ -2181,7 +2845,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
             $this->save($indb);
         }
 
@@ -2195,7 +2859,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save($indb);
@@ -3076,7 +3740,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3102,7 +3766,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3125,7 +3789,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3148,7 +3812,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3195,7 +3859,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3218,7 +3882,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
 //            $this->parase_log($link . $title . $time);
 //            echo $link . $title . $time . "<br/>";
             $this->save_p($indb);
@@ -3241,7 +3905,7 @@ class MediaBuilder
             $indb["link"] = $link;
             $indb["time"] = $time;
             $indb["source"] = $source;
-            $indb["priority"] = 1;
+//            $indb["priority"] = 1;
             $this->save_p($indb);
         }
         $this->parase_log("sda_CL1026-" . Carbon::now()->toDateTimeString());
@@ -3520,7 +4184,7 @@ class MediaBuilder
                 $indb["link"] = $link;
                 $indb["time"] = trim($time);
                 $indb["source"] = $source;
-                echo $link . $title . $time . "</br>";
+//                echo $link . $title . $time . "</br>";
 //                $this->save_p($indb);
 
             } catch (\Exception $e) {
@@ -3590,6 +4254,11 @@ class MediaBuilder
         $this->parase_log("qrjh-" . Carbon::now()->toDateTimeString());
     }
 
+    public function vcbeat($html)
+    {
+        dd($html);
+    }
+
 
     /**
      *
@@ -3607,7 +4276,7 @@ class MediaBuilder
             $fp = fopen($policy, "a+");
         } elseif ($level == "fellow") {
             $fp = fopen($fellowplus, "a+");
-        }else {
+        } else {
             $fp = fopen($exist, "a+"); //文件被清空后再写入
         }
 
@@ -3660,7 +4329,7 @@ class MediaBuilder
             $daily->link = $dn["link"];
             $daily->source = $dn["source"];
             $daily->pub_date = $dn["time"];
-            $daily->company = "";
+            $daily->company = [];
             $daily->tags = [];
             $daily->flag = 2;
             $daily->isread = 0;

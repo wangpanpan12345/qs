@@ -4,9 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moloquent;
+use Elasticquent\ElasticquentTrait;
 
 class KnowledgeCanned extends Moloquent
 {
+    use ElasticquentTrait;
+
     //
 //    use SoftDeletes;
     /**
@@ -26,10 +29,10 @@ class KnowledgeCanned extends Moloquent
     ];
     protected $collection = 'knowledge_canned';
 
-    public function tags()
-    {
-        return $this->belongsTo('App\Tags', 'tags', 'name');
-    }
+//    public function tags()
+//    {
+//        return $this->belongsTo('App\Tags', 'tags', 'name');
+//    }
 
     public function users()
     {

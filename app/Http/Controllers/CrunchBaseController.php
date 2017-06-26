@@ -482,8 +482,12 @@ class CrunchBaseController
         $item['workedCases'] = $jobs_array;
         $ps = pathinfo($path);
         $pname = "/person/" . $ps["filename"];
-//        dd($item);
-        $person = Founders::where("founderDetailLink", $pname)->get();
+        $pname_all = "https://www.crunchbase.com".$pname;
+//        dd($pname);
+//        $pname = "/person/david-sinclair-2";
+
+        $person = Founders::where("founderDetailLink", $pname)->orWhere("founderDetailLink", $pname_all)->get();
+//        dd($person);
         if (count($person) == 1) {
 //            dd($person);
             $person = $person[0];

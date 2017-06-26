@@ -19,6 +19,41 @@
         margin: 0;
     }
 
+    .top_menu {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .taps {
+        display: flex;
+        /*align-items: center;*/
+        justify-content: flex-end;
+    }
+
+    .taps .add_relation {
+        margin-right: 20px;
+        line-height: 30px;
+    }
+
+    .type_tap {
+        display: inline-block;
+        width: 130px;
+        height: 30px;
+        line-height: 30px;
+        background: #dde0e4;
+        color: #fff;
+        border-radius: 2px;
+        text-align: center;
+    }
+
+    .type_tap a {
+        color: #fff;
+    }
+
+    .top_menu .active {
+        background: #1E88E5;
+    }
+
     .list {
         margin: 20px 0;
         border: 1px solid #e2e2e2;
@@ -26,16 +61,239 @@
         position: relative;
     }
 
+    .core_edit {
+        display: flex;
+        display: none;
+        /*justify-content: space-between;*/
+        flex-direction: column;
+        /*align-items: flex-start;*/
+        position: fixed;
+        width: 900px;
+        /*height: 400px;*/
+        background: #f5f8fa;
+        top: 50%;
+        margin-top: -200px;
+        left: 50%;
+        margin-left: -450px;
+        z-index: 1001;
+        border: 1px solid #1d87e5;
+        border-left: 10px solid #1d87e5;
+        border-radius: 2px;
+        animation: fade-in; /*动画名称*/
+        animation-duration: .3s; /*动画持续时间*/
+        -webkit-animation: fade-in .3s; /*针对webkit内核*/
+    }
+
+    .core_edit_l {
+        justify-content: space-between;
+        display: flex;
+    }
+
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+        /*初始状态 透明度为0*/
+        40% {
+            opacity: 0;
+        }
+        /*过渡状态 透明度为0*/
+        100% {
+            opacity: 1;
+        }
+        /*结束状态 透明度为1*/
+    }
+
+    @-webkit-keyframes fade-in { /*针对webkit内核*/
+        0% {
+            opacity: 0;
+        }
+        40% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fade-in-shadow {
+        0% {
+            opacity: 0;
+        }
+        /*初始状态 透明度为0*/
+        40% {
+            opacity: 0;
+        }
+        /*过渡状态 透明度为0*/
+        100% {
+            opacity: .7;
+        }
+        /*结束状态 透明度为1*/
+    }
+
+    @-webkit-keyframes fade-in-shadow { /*针对webkit内核*/
+        0% {
+            opacity: 0;
+        }
+        40% {
+            opacity: 0;
+        }
+        100% {
+            opacity: .7;
+        }
+    }
+
+    .ex_title {
+
+        margin: 20px 50px 0 50px;
+        background: #fff;
+        display: inline-block;
+        padding: 10px;
+        border: 1px solid #d8d8d8;
+        max-height: 48px;
+        overflow: hidden;
+        line-height: 28px;
+        flex: 1;
+    }
+
+    .left_edit {
+        margin-left: 52px;
+        margin-top: 14px;
+        margin-bottom: 25px;
+    }
+
+    .right_ok {
+        margin-top: 14px;
+        margin-right: 50px;
+    }
+
+    .right_ok span {
+        display: block;
+        width: 100px;
+        height: 30px;
+        background: #1d87e5;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 2px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .right_ok img {
+        width: 100px;
+        height: 20px;
+        margin: 5px 0;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+    .l_row:first-child {
+        margin: 0;
+    }
+
+    .l_row {
+        display: flex;
+        align-items: flex-start;
+        margin: 10px 0;
+    }
+
+    .l_row label {
+        width: 60px;
+        color: #1E87E5;
+    }
+
+    .l_input {
+        margin: 0 20px;
+    }
+
+    .news_wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top_title {
+        display: flex;
+        justify-content: space-between;
+        height: 54px;
+        background: #fff;
+        align-items: center;
+    }
+
+    .news_wrap {
+        border: 1px solid #dde0e4;
+    }
+
+    .news_list {
+        border-left: 10px solid #dde0e4;
+    }
+
+    .news_list:before {
+        content: ""; /*:before和:after必带技能，重要性为满5颗星*/
+        display: block;
+        position: absolute; /*日常绝对定位*/
+    }
+
+    .news_wrap .active {
+        border-left: 10px solid #1d87e5;
+    }
+
+    .news_wrap .edit_button {
+        display: flex;
+        flex: 0 0 60px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        background: #1d87e5;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+
+    .pub {
+        border-left: 10px solid #4CAF50 !important;
+    }
+
+    .edit_button img {
+        height: 20px;
+        margin: 5px 0;
+    }
+
+    .top_title {
+        padding: 0 20px;
+    }
+
+    .tags {
+        padding: 12px 20px;
+        font-size: 12px;
+        background: #f2f2f2;
+        border-bottom: 1px solid #dde0e4;
+        /*border-top: 1px solid #dde0e4;*/
+    }
+
+    .tags span {
+        margin-right: 20px;
+    }
+
+    .tags label {
+        margin: 0;
+        display: inline-block;
+        background: #d8d8d8;
+        color: #fff;
+        padding: 0 10px;
+        margin-right: 6px;
+        /*border-radius: 2px;*/
+    }
+
     img {
-        border-radius: 50%;
+        /*border-radius: 50%;*/
     }
 
     .title {
         display: inline-block;
-        width: 60%;
-        font-family: Baskerville-eText, Baskerville, Garamond, serif !important;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        /*font-family: Baskerville-eText, Baskerville, Garamond, serif !important;*/
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
+        margin-right: 20px;
     }
 
     .title a, .source a, .company_relate a {
@@ -44,9 +302,12 @@
 
     .source {
         display: inline-block;
-        float: right;
-        color: #b2b2b2;
-        font-weight: 500;
+        width: 160px;
+    }
+
+    .pub_date {
+        display: inline-block;
+        width: 110px;
     }
 
     .opr_group {
@@ -152,6 +413,7 @@
     .cp_textarea {
         width: 300px;
         height: 200px;
+        outline: none;
     }
 
     .source_show span {
@@ -163,6 +425,16 @@
     }
 
     .selector input {
+        height: 30px;
+        outline: none;
+    }
+
+    .source_select {
+        height: 30px;
+        width: 180px;
+        -webkit-appearance: none;
+        border: 1px solid #d8d8d8;
+        border-radius: 0 !important;
         outline: none;
     }
 
@@ -199,35 +471,11 @@
     }
 
     .important {
-        position: relative;
-        top: -18px;
-        display: block;
-        z-index: 2;
-        float: left;
-        border: 1px solid #e2e2e2;
-        font-size: 12px;
-        /*left: 110px;*/
-        color: #fff;
-        background: #000;
-        height: 17px;
-        line-height: 13px;
-        padding: 1px 15px;
+        background: #1d87e5 !important;
     }
 
     .pubished {
-        position: relative;
-        top: -18px;
-        display: block;
-        z-index: 2;
-        float: left;
-        border: 1px solid #e2e2e2;
-        font-size: 12px;
-        /*left: 55px;*/
-        color: #fff;
-        background: #75ce66;
-        height: 17px;
-        line-height: 13px;
-        padding: 1px 15px;
+        background: #4CAF50 !important;
     }
 
     .add_dailynews {
@@ -250,6 +498,7 @@
     }
 
     .search_form {
+        margin-right: 42px;
         display: inline-block;
     }
 
@@ -303,13 +552,23 @@
 
     .close_s {
         position: absolute;
-        display: block;
-        top: 10px;
-        width: 10px;
-        height: 10px;
-        right: 10px;
-        line-height: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: -46px;
+        width: 26px;
+        height: 26px;
+        right: 0px;
+        line-height: 26px;
         cursor: pointer;
+        background: #fff;
+        border: 1px solid #1d87e5;
+        border-radius: 50%;
+        color: #1d87e5;
+    }
+
+    .key_search {
+        width: 180px;
     }
 
     .deal {
@@ -327,14 +586,57 @@
         float: right;
     }
 
+    .select2-container--default .select2-selection--multiple {
+        border-radius: 0;
+    }
+
+    .select2-search__field {
+        width: 150px !important;
+    }
+
+    .shadow {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        background: #4A4A4A;
+        opacity: .7;
+        z-index: 1000;
+        animation: fade-in-shadow; /*动画名称*/
+        animation-duration: .3s; /*动画持续时间*/
+        -webkit-animation: fade-in-shadow .3s; /*针对webkit内核*/
+    }
+
     @media (max-width: 748px) {
         .add_relation {
             display: none;
         }
 
+        .top_title {
+            height: auto;
+        }
+
         .delete a {
             display: none;
         }
+        .core_edit{
+            width: 100%;
+        }
+        .taps{
+            display: inline-block;
+        }
+        .type_tap{
+            margin-bottom: 10px;
+        }
+        .news_wrap{
+            margin-top: 10px;
+        }
+        .edit_button{
+            display: none!important;
+        }
+
 
         .delete {
             position: absolute;
@@ -342,7 +644,6 @@
             right: 0;
             width: 20px;
             height: 20px;
-
         }
 
         .title {
@@ -362,7 +663,9 @@
 
 </style>
 @section('content')
+    <div class="shadow">
 
+    </div>
     <div class="remover_container">
         <label><input name="no" type="radio" value="-2"/>内容不相关 </label>
         <label><input name="no" type="radio" value="-1"/>内容不重要 </label>
@@ -371,94 +674,160 @@
         <a href="javascript:void(0);" id="delete_selector">提交</a>
     </div>
 
-    <div class="selector source_select_container">
-        <form action="/dailynews/key" method="get" class="search_form">
-            <input type="text" name="key" placeholder="keywords"/>
-            <input class="selector_ok" type="submit" value="Search"/>
-        </form>
-        <select class="source_select">
-            <option><span></span></option>
-            <option><span>All</span></option>
-            <option><span>newswise</span></option>
-            <option><span>fiercebiotech</span></option>
-            <option><span>fiercepharma</span></option>
-            <option><span>fiercemedicaldevices</span></option>
-            <option><span>statnews</span></option>
-            <option><span>genengnews</span></option>
-            <option><span>genomeweb</span></option>
-            <option><span>spectrum</span></option>
-            <option><span>technologyreview</span></option>
-            <option><span>nytimes</span></option>
-            <option><span>theatlantic</span></option>
-            <option><span>wsj</span></option>
-            <option><span>vox</span></option>
-            <option><span>scientificamerican</span></option>
-            <option><span>the_scientist</span></option>
-            <option><span>sciencenews_gen</span></option>
-            <option><span>theverge</span></option>
-            <option><span>livescience</span></option>
-            <option><span>asianscientist_pharma</span></option>
-            <option><span>mdtmag</span></option>
-            <option><span>sciencealert</span></option>
-            <option><span>npr</span></option>
-            <option><span>popsci</span></option>
-            <option><span>eurekalert</span></option>
-            <option><span>sciencedaily</span></option>
-            <option><span>techcrunch</span></option>
-            <option><span>mobihealthnews</span></option>
-            <option><span>fastcompany</span></option>
-            <option><span>nature_news</span></option>
-            <option><span>nature_biological</span></option>
-            <option><span>nature_nbt_research</span></option>
-            <option><span>nature_nbt_news</span></option>
-            <option><span>nature_ng_research</span></option>
-            <option><span>nature_ng_news</span></option>
-            <option><span>nature_ni_research</span></option>
-            <option><span>nature_ni_news</span></option>
-            <option><span>nature_nm_research</span></option>
-            <option><span>nature_nm_news</span></option>
-            <option><span>nature_nmicrobiol_news</span></option>
-            <option><span>nature_nmicrobiol_research</span></option>
-            <option><span>nature_nnano_news</span></option>
-            <option><span>nature_nnano_research</span></option>
-            <option><span>nature_neuro_research</span></option>
-            <option><span>nature_neuro_news</span></option>
-            <option><span>cell</span></option>
-            <option><span>sciencemag_news</span></option>
-            <option><span>sciencemag_advances</span></option>
-            <option><span>sciencemag_robotics</span></option>
-            <option><span>sciencemag_stm</span></option>
-            <option><span>nejm</span></option>
-            <option><span>thelancet_news</span></option>
-            <option><span>jamanetwork</span></option>
-            <option><span>elifesciences</span></option>
-            <option><span>bmj_news</span></option>
-            <option><span>bmj_research</span></option>
-            <option><span>bmj_research_news</span></option>
-            <option><span>thelancet_research</span></option>
-            <option><span>singularityhub_health</span></option>
-            <option><span>singularityhub_science</span></option>
-            <option><span>singularityhub_technology</span></option>
-            <option><span>deepmind</span></option>
-            <option><span>forbes</span></option>
-            <option><span>ca_cancer</span></option>
-            <option><span>immunity</span></option>
-            <option><span>annals</span></option>
-            <option><span>jco</span></option>
-            <option><span>jci</span></option>
-            <option><span>cell_neurosciences</span></option>
-            <option><span>gastrojournal</span></option>
-            <option><span>annals_surgery</span></option>
-            <option><span>jbjsjournal</span></option>
+    <section class="core_edit">
+        <div style="display: flex">
+            <span class="ex_title"></span>
+        </div>
+        <div class="core_edit_l">
+            <div class="close_s">X</div>
+            <div class="left_edit">
+                <div class="l_row">
+                    <label>关联公司</label>
+                <span class="l_input">
+                    <select class="company_select" multiple="multiple" style="width: 300px">
+                        @if(!empty($V->company))
+                            @foreach($V->company as $kt=>$kv)
+                                <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </span>
+                </div>
+                <div class="l_row">
+                    <label>关联人</label>
+                <span class="l_input">
+                    <select class="person_select" multiple="multiple" style="width: 300px">
+                        @if(!empty($V->person))
+                            @foreach($V->person as $kt=>$kv)
+                                <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </span>
+                </div>
+                <div class="l_row">
+                    <label>打标签</label>
+                <span class="l_input">
+                    <select class="tags_select" multiple="multiple" style="width: 300px">
+                        @if(!empty($V->tags))
+                            @foreach($V->tags as $kt=>$kv)
+                                <option value="{{$kv}}" selected="selected">{{$kv}}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </span>
+                </div>
+                <div class="l_row"><label>加入选题</label><span></span></div>
+                <div class="l_row">
+                    <label>列为精选</label>
+                <span class="l_input"><textarea class="cp_textarea"></textarea>
+                </span>
+                </div>
+
+            </div>
+            <div class="right_ok">
+                <div><span id="update_dn">提交</span></div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="top_menu">
+        <div class="selector source_select_container">
+            <form action="/dailynews/key" method="get" class="search_form">
+                <input class="key_search" type="text" name="key" placeholder="keywords"/>
+                <input class="selector_ok" type="submit" value="Search"/>
+            </form>
+            <select class="source_select">
+                <option><span>新闻源选择</span></option>
+                <option><span>All</span></option>
+                <option><span>newswise</span></option>
+                <option><span>fiercebiotech</span></option>
+                <option><span>fiercepharma</span></option>
+                <option><span>fiercemedicaldevices</span></option>
+                <option><span>statnews</span></option>
+                <option><span>genengnews</span></option>
+                <option><span>genomeweb</span></option>
+                <option><span>spectrum</span></option>
+                <option><span>technologyreview</span></option>
+                <option><span>nytimes</span></option>
+                <option><span>theatlantic</span></option>
+                <option><span>wsj</span></option>
+                <option><span>vox</span></option>
+                <option><span>scientificamerican</span></option>
+                <option><span>the_scientist</span></option>
+                <option><span>sciencenews_gen</span></option>
+                <option><span>theverge</span></option>
+                <option><span>livescience</span></option>
+                <option><span>asianscientist_pharma</span></option>
+                <option><span>mdtmag</span></option>
+                <option><span>sciencealert</span></option>
+                <option><span>npr</span></option>
+                <option><span>popsci</span></option>
+                <option><span>eurekalert</span></option>
+                <option><span>sciencedaily</span></option>
+                <option><span>techcrunch</span></option>
+                <option><span>mobihealthnews</span></option>
+                <option><span>fastcompany</span></option>
+                <option><span>nature_news</span></option>
+                <option><span>nature_biological</span></option>
+                <option><span>nature_nbt_research</span></option>
+                <option><span>nature_nbt_news</span></option>
+                <option><span>nature_ng_research</span></option>
+                <option><span>nature_ng_news</span></option>
+                <option><span>nature_ni_research</span></option>
+                <option><span>nature_ni_news</span></option>
+                <option><span>nature_nm_research</span></option>
+                <option><span>nature_nm_news</span></option>
+                <option><span>nature_nmicrobiol_news</span></option>
+                <option><span>nature_nmicrobiol_research</span></option>
+                <option><span>nature_nnano_news</span></option>
+                <option><span>nature_nnano_research</span></option>
+                <option><span>nature_neuro_research</span></option>
+                <option><span>nature_neuro_news</span></option>
+                <option><span>cell</span></option>
+                <option><span>sciencemag_news</span></option>
+                <option><span>sciencemag_advances</span></option>
+                <option><span>sciencemag_robotics</span></option>
+                <option><span>sciencemag_stm</span></option>
+                <option><span>nejm</span></option>
+                <option><span>thelancet_news</span></option>
+                <option><span>jamanetwork</span></option>
+                <option><span>elifesciences</span></option>
+                <option><span>bmj_news</span></option>
+                <option><span>bmj_research</span></option>
+                <option><span>bmj_research_news</span></option>
+                <option><span>thelancet_research</span></option>
+                <option><span>singularityhub_health</span></option>
+                <option><span>singularityhub_science</span></option>
+                <option><span>singularityhub_technology</span></option>
+                <option><span>deepmind</span></option>
+                <option><span>forbes</span></option>
+                <option><span>ca_cancer</span></option>
+                <option><span>immunity</span></option>
+                <option><span>annals</span></option>
+                <option><span>jco</span></option>
+                <option><span>jci</span></option>
+                <option><span>cell_neurosciences</span></option>
+                <option><span>gastrojournal</span></option>
+                <option><span>annals_surgery</span></option>
+                <option><span>jbjsjournal</span></option>
 
 
-        </select>
-        <input class="add_show" type="submit" value="添加一条"/>
+            </select>
 
+            <input class="add_show" type="submit" value="添加一条"/>
+        </div>
+        <div class="taps">
+                <span><a class="add_relation" target="_blank"
+                         href="https://admin.geekheal.net/create">缺少关联?去创建</a></span>
+            <span class="type_tap active"><a href="/dailynews">DailyNews(T)</a></span>
+            <span class="type_tap"><a href="/dailynews_p">DailyNews(P)</a></span>
+        </div>
         {{--<a style="float: right" href="/qs-admin/keynews">每日精选</a>--}}
-        <a class="add_relation" style="float: right;margin-right: 10px" target="_blank"
-           href="https://admin.geekheal.net/create">缺少关联?去创建</a>
-    </div>
+    </section>
+
+
     <div class="add_dailynews add_news_container">
         <span><input type="text" id="add_title" placeholder="原文标题"/></span>
         <span><input type="text" id="add_link" placeholder="原文链接"/></span>
@@ -480,119 +849,337 @@
         </span>
         <span><input type="submit" id="add_add" value="提交"/></span>
     </div>
-    <div class="process_report">
-        <span class="deal"></span>
-    </div>
+    {{--<div class="process_report">--}}
+    {{--<span class="deal"></span>--}}
+    {{--</div>--}}
     {{--    {{dd($dn)}}--}}
-    <?php $total = 0;$deal = 0?>
-    @foreach($dn->items() as $K => $V)
+    <span class="authoring" style="display: none" data-id="{{Auth::user()->name}}"></span>
+    <section class="news_wrap">
+        @foreach($dn->items() as $K => $V)
+            <div class="news_list @if($V["created_at"]>Carbon\Carbon::today()->subHours(6)) active @endif @if(isset($V["is_pub"])&&$V["is_pub"]=='1') pub
+            @endif">
 
-        <div class="list" data-id="{{$V->_id}}">
-            <div class="labels">
-                @if($V["created_at"]>Carbon\Carbon::today()->subHours(6))
-                    <?php $total++;?>
-                    @if(!empty($V["tags"]||!empty($V["company"])||$V["is_pub"]=='1'||$V["flag"]=='0'))
-                        <?php $deal++;?>
-                    @endif
-                    <label class="latest">today</label>
-                @endif
-                @if(isset($V["priority"])&&$V["priority"]=='1')
-                    <label class="important">{{$V["source"]}}</label>
-                @endif
-                @if(isset($V["is_pub"])&&$V["is_pub"]=='1')
-                    <label class="pubished">{{"已发布"}}</label>
-                @endif
-            </div>
-            <span class="title">
-                <a style="margin: 0" target="_blank"
-                   href="{{ URL::to($V["link"]) }}">{!! $V["title"] !!}</a>
-            </span>
-            <span class="pub_at">@if($V["pub_date"]!="")pub_at:{{$V["pub_date"]}}@endif</span>
-            <span class="source">
-                From:<a href="/dailynews/source/{{$V["source"]}}">{{$V["source"]}}</a>
-            </span>
-            @if($V["company"]!="")
-                <span class="company_relate">Related:
-                    @foreach($V["company"] as $c=>$n)
-                        <a href="/qs-admin/detail/{{$n["_id"]}}">{{$n["name"]}}</a>
-                    @endforeach
-                </span>
-            @endif
-            @if($V["person"]!="")
-                <span class="company_relate">Related person:
-                    @foreach($V["person"] as $t=>$g)
-                        <a href="/qs-admin/founder/{{$g["_id"]}}">{{$g["name"]}}</a>
-                    @endforeach
-                </span>
-            @endif
-            @if(!empty($V["tags"]))
-                <span class="company_relate">tags:
-                    @foreach($V["tags"] as $t=>$g)
-                        <a href="/timeline/tag/{{$g}}">{{$g}}</a>
-                    @endforeach
-                </span>
-            @endif
+                <div class="top_title">
+                    <span class="title"><a style="margin: 0" target="_blank"
+                                           href="{{ URL::to($V["link"]) }}">{!! $V["title"] !!}</a></span>
+                    <span class="edit_button" data-id="{{$V["id"]}}"><img src="/img/Edit.svg"></span>
 
 
-            <div class="opr_group">
-                <span class="opr company"><a style="margin: 0" href="javascript:void(0);">关联公司</a></span>
-                <span class="opr person"><a style="margin: 0" href="javascript:void(0);">关联人</a></span>
-                <span class="opr tags"><a style="margin: 0" href="javascript:void(0);">打标签</a></span>
-                <span class="opr pub_news"><a style="margin: 0" href="javascript:void(0);">列为精选</a></span>
-                <span class="opr delete" data-id="{{$V->_id}}"><a style="margin: 0" href="javascript:void(0);">移入回收站</a></span>
-
-                <span class="opr_company">
-                    <select class="company_select" multiple="multiple" style="width: 300px">
+                    <div class="company_html" style="display: none">
                         @if(!empty($V->company))
                             @foreach($V->company as $kt=>$kv)
                                 <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
                             @endforeach
                         @endif
-                    </select>
-                    <input data-id="{{$V->_id}}" class="company_in" type="button" value="commit"/>
-                </span>
-
-                <span class="opr_person">
-
-                    <select class="person_select" multiple="multiple" style="width: 300px">
+                    </div>
+                    <div class="person_html" style="display: none">
                         @if(!empty($V->person))
                             @foreach($V->person as $kt=>$kv)
                                 <option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>
                             @endforeach
                         @endif
-                    </select>
-                    <input data-id="{{$V->_id}}" class="person_in" type="button" value="commit"/>
-                </span>
-
-                <span class="opr_tags">
-                    <select class="tags_select" multiple="multiple" style="width: 300px">
+                    </div>
+                    <div class="tags_html" style="display: none">
                         @if(!empty($V->tags))
                             @foreach($V->tags as $kt=>$kv)
                                 <option value="{{$kv}}" selected="selected">{{$kv}}</option>
                             @endforeach
                         @endif
-                    </select>
-                    <input data-id="{{$V->_id}}" class="tags_in" type="button" value="commit"/>
-                </span>
-                <span class="opr_excerpt">
-                    <div class="excerpt_wap" style="display: inline-block">
-                        <textarea class="cp_textarea">{{$V["excerpt"]}}</textarea>
                     </div>
-                    <input data-id="{{$V->_id}}" class="excerpt_in" type="button" value="commit"/>
-                </span>
+                    <div class="excerpt_html"
+                         style="display: none">@if(isset($V["excerpt"])){{trim($V["excerpt"])}}@endif</div>
+
+                </div>
+                <div class="tags" data-id="{{$V["id"]}}">
+                    <label>来源</label><span class="source">{{$V["source"]}}</span>
+                    <label>时间</label><span class="pub_date">{{$V["pub_date"]}}</span>
+                    @if(isset($V["is_pub"])&&$V["is_pub"]=='1')
+                        <label class="pubished">{{"已发布"}}</label>
+                    @endif
+                    @if(isset($V["priority"])&&$V["priority"]=='1')
+                        <label class="important">{{$V["source"]}}</label>
+                    @endif
+                </div>
             </div>
+        @endforeach
+    </section>
+    {{--<?php $total = 0;$deal = 0?>--}}
+    {{--@foreach($dn->items() as $K => $V)--}}
 
-        </div>
+    {{--<div class="list" data-id="{{$V->_id}}">--}}
+    {{--<div class="labels">--}}
+    {{--@if($V["created_at"]>Carbon\Carbon::today()->subHours(6))--}}
+    {{--<?php $total++;?>--}}
+    {{--@if(!empty($V["tags"]||!empty($V["company"])||$V["is_pub"]=='1'||$V["flag"]=='0'))--}}
+    {{--<?php $deal++;?>--}}
+    {{--@endif--}}
+    {{--<label class="latest">today</label>--}}
+    {{--@endif--}}
+    {{--@if(isset($V["priority"])&&$V["priority"]=='1')--}}
+    {{--<label class="important">{{$V["source"]}}</label>--}}
+    {{--@endif--}}
+    {{--@if(isset($V["is_pub"])&&$V["is_pub"]=='1')--}}
+    {{--<label class="pubished">{{"已发布"}}</label>--}}
+    {{--@endif--}}
+    {{--</div>--}}
+    {{--<span class="title">--}}
+    {{--<a style="margin: 0" target="_blank"--}}
+    {{--href="{{ URL::to($V["link"]) }}">{!! $V["title"] !!}</a>--}}
+    {{--</span>--}}
+    {{--<span class="pub_at">@if($V["pub_date"]!=""&&!is_array($V["pub_date"]))--}}
+    {{--pub_at:{{$V["pub_date"]}}@endif</span>--}}
+    {{--<span class="source">--}}
+    {{--From:<a href="/dailynews/source/{{$V["source"]}}">{{$V["source"]}}</a>--}}
+    {{--</span>--}}
+    {{--@if($V["company"]!="")--}}
+    {{--<span class="company_relate">Related:--}}
+    {{--@foreach($V["company"] as $c=>$n)--}}
+    {{--<a href="/qs-admin/detail/{{$n["_id"]}}">{{$n["name"]}}</a>--}}
+    {{--@endforeach--}}
+    {{--</span>--}}
+    {{--@endif--}}
+    {{--@if($V["person"]!="")--}}
+    {{--<span class="company_relate">Related person:--}}
+    {{--@foreach($V["person"] as $t=>$g)--}}
+    {{--<a href="/qs-admin/founder/{{$g["_id"]}}">{{$g["name"]}}</a>--}}
+    {{--@endforeach--}}
+    {{--</span>--}}
+    {{--@endif--}}
+    {{--@if(!empty($V["tags"]))--}}
+    {{--<span class="company_relate">tags:--}}
+    {{--@foreach($V["tags"] as $t=>$g)--}}
+    {{--<a href="/timeline/tag/{{$g}}">{{$g}}</a>--}}
+    {{--@endforeach--}}
+    {{--</span>--}}
+    {{--@endif--}}
 
-    @endforeach
+
+    {{--<div class="opr_group">--}}
+    {{--<span class="opr company"><a style="margin: 0" href="javascript:void(0);">关联公司</a></span>--}}
+    {{--<span class="opr person"><a style="margin: 0" href="javascript:void(0);">关联人</a></span>--}}
+    {{--<span class="opr tags"><a style="margin: 0" href="javascript:void(0);">打标签</a></span>--}}
+    {{--<span class="opr pub_news"><a style="margin: 0" href="javascript:void(0);">列为精选</a></span>--}}
+    {{--<span class="opr delete" data-id="{{$V->_id}}"><a style="margin: 0" href="javascript:void(0);">移入回收站</a></span>--}}
+
+    {{--<span class="opr_company">--}}
+    {{--<select class="company_select" multiple="multiple" style="width: 300px">--}}
+    {{--@if(!empty($V->company))--}}
+    {{--@foreach($V->company as $kt=>$kv)--}}
+    {{--<option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>--}}
+    {{--@endforeach--}}
+    {{--@endif--}}
+    {{--</select>--}}
+    {{--<input data-id="{{$V->_id}}" class="company_in" type="button" value="commit"/>--}}
+    {{--</span>--}}
+
+    {{--<span class="opr_person">--}}
+
+    {{--<select class="person_select" multiple="multiple" style="width: 300px">--}}
+    {{--@if(!empty($V->person))--}}
+    {{--@foreach($V->person as $kt=>$kv)--}}
+    {{--<option value="{{$kv["_id"]}}" selected="selected">{{$kv["name"]}}</option>--}}
+    {{--@endforeach--}}
+    {{--@endif--}}
+    {{--</select>--}}
+    {{--<input data-id="{{$V->_id}}" class="person_in" type="button" value="commit"/>--}}
+    {{--</span>--}}
+
+    {{--<span class="opr_tags">--}}
+    {{--<select class="tags_select" multiple="multiple" style="width: 300px">--}}
+    {{--@if(!empty($V->tags))--}}
+    {{--@foreach($V->tags as $kt=>$kv)--}}
+    {{--<option value="{{$kv}}" selected="selected">{{$kv}}</option>--}}
+    {{--@endforeach--}}
+    {{--@endif--}}
+    {{--</select>--}}
+    {{--<input data-id="{{$V->_id}}" class="tags_in" type="button" value="commit"/>--}}
+    {{--</span>--}}
+    {{--<span class="opr_excerpt">--}}
+    {{--<div class="excerpt_wap" style="display: inline-block">--}}
+    {{--<textarea class="cp_textarea">{{$V["excerpt"]}}</textarea>--}}
+    {{--</div>--}}
+    {{--<input data-id="{{$V->_id}}" class="excerpt_in" type="button" value="commit"/>--}}
+    {{--</span>--}}
+    {{--</div>--}}
+
+    {{--</div>--}}
+
+    {{--@endforeach--}}
     {{$dn->links()}}
     @if($total==0)
         {{$total = 1}}
     @endif
     <script>
         $(function () {
-            $(".deal").css({"width": "<?php echo ($deal*100/$total)."%"; ?>"});
-            $(".deal").attr({"title": "<?php echo $deal; ?>"});
+            $(".edit_button").click(function () {
+                $(".company_select")[0].innerHTML = "";
+                $(".person_select")[0].innerHTML = "";
+                $(".tags_select")[0].innerHTML = "";
+                $(".ex_title")[0].innerHTML = "";
+                $(".cp_textarea").val("");
+//                var company = $(this).parent(".top_title").children(".company_html")[0].innerHTML;
+//                var person = $(this).parent(".top_title").children(".person_html")[0].innerHTML;
+//                var tags = $(this).parent(".top_title").children(".tags_html")[0].innerHTML;
+//                var excerpt = $(this).parent(".top_title").children(".excerpt_html")[0].innerHTML;
+                var title = $(this).parent(".top_title").children(".title").children("a")[0].innerHTML;
+                var _id = $(this).attr("data-id");
+//                $(".company_select")[0].innerHTML = company;
+//                $(".person_select")[0].innerHTML = person;
+//                $(".tags_select")[0].innerHTML = tags;
+                $(".ex_title")[0].innerHTML = title;
+//                $(".cp_textarea").val(excerpt);
+                var _idp = {};
+                _idp._id = _id;
+                get_one("/dailynews/get_one", _idp, $(this));
+                $(".shadow").show();
+                $(".core_edit").css("display", "flex");
+                $("#update_dn").attr("data-id", _id);
+                var param = {};
+                param.name = $(".authoring").attr("data-id");
+                param._id = $(this).attr("data-id");
+//                console.log(param);
+                post_edit_notify(param, "/dailynews/edit/notify");
+            });
+
+
+            $("#update_dn").click(function () {
+                var param = {};
+                var _id = $(this).attr("data-id");
+                var excerpt = $(".l_input .cp_textarea").val();
+                var company = $(".l_row .company_select").children('option');
+                var company_now = $(".l_row .company_select").siblings(".select2").find(".select2-selection__choice");
+                var company_now_tag = [];
+                $.each(company_now, function (n, value) {
+                    company_now_tag.push($(value).attr("title"));
+                });
+                var companys = [];
+                $.each(company, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+                    if (company_now_tag.indexOf(data["name"]) != -1) {
+                        companys.push(data);
+                    }
+                });
+                var person = $(".l_row .person_select").children('option');
+                var person_now = $(".l_row .person_select").siblings(".select2").find(".select2-selection__choice");
+                var person_now_tag = [];
+                $.each(person_now, function (n, value) {
+                    person_now_tag.push($(value).attr("title"));
+                });
+                var persons = [];
+                $.each(person, function (n, value) {
+                    var data = {};
+                    data["_id"] = $(value).attr("value");
+                    data["name"] = $(value).text();
+//                    console.log(data["name"], person_now_tag.indexOf(data["name"]));
+                    if (person_now_tag.indexOf(data["name"]) != -1) {
+                        persons.push(data);
+                    }
+
+                });
+                var name = $(".l_row .tags_select").siblings(".select2").find(".select2-selection__choice");
+                var tags = [];
+                $.each(name, function (n, value) {
+                    tags.push($(value).attr("title"));
+
+                });
+                param._id = _id;
+                param.person = persons;
+                param.company = companys;
+                param.tags = tags;
+                param.excerpt = excerpt;
+                if (persons.length == 0 && companys.length == 0 && tags.length == 0 && excerpt == "") {
+                    alert("空数据,发布失败!");
+                    return false;
+                }
+                console.log(param);
+                var dom = $('.tags[data-id=' + _id + ']');
+                update_All("/dailynews/up_all", param, dom);
+
+            });
+
+
+            function get_one(url, param, dom) {
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: param,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        if (data.error == 0) {
+                            var company = data.result.company;
+                            var company_html = "";
+                            if (company != "undefined" && typeof(company) != "undefined" && company.length != 0) {
+                                $.each(company, function (n, value) {
+                                    company_html += '<option value="' + value._id + '" selected="selected">' + value.name + '</option>';
+                                });
+                            }
+                            var tags = data.result.tags;
+                            var tags_html = "";
+                            if (tags != "undefined" && typeof(tags) != "undefined" && tags.length != 0) {
+                                $.each(tags, function (n, value) {
+                                    tags_html += '<option value="' + value + '" selected="selected">' + value + '</option>';
+                                });
+                            }
+                            var person = data.result.person;
+                            var person_html = "";
+                            if (person != "undefined" && typeof(person) != "undefined" && person.length != 0) {
+                                $.each(person, function (n, value) {
+                                    person_html += '<option value="' + value._id + '" selected="selected">' + value.name + '</option>';
+                                });
+                            }
+                            var excerpt = "";
+                            if (excerpt != "undefined" && typeof(excerpt) != "undefined")
+                                excerpt = data.result.excerpt;
+                            $(".company_select")[0].innerHTML = company_html;
+                            $(".person_select")[0].innerHTML = person_html;
+                            $(".tags_select")[0].innerHTML = tags_html;
+//                            $(".ex_title")[0].innerHTML = title;
+                            $(".cp_textarea").val(excerpt);
+                            console.log(tags_html);
+
+
+                        } else {
+                            console.log(data);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
+
+            function update_All(url, param, dom) {
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: param,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        if (data.error == 0) {
+                            $(".shadow").hide();
+                            $(".core_edit").hide();
+                            window.location.reload();
+                        } else {
+                            console.log(data);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
+
+
+            //  $(".deal").css({"width": "<?php echo ($deal*100/$total)."%"; ?>"});
+            //$(".deal").attr({"title": "<?php echo $deal; ?>"});
             $(".company").click(function () {
                 var company = $(this).siblings(".opr_company");
                 company.toggle();
@@ -615,7 +1202,13 @@
                 $(".add_dailynews").toggle();
             });
             $(".close_s").click(function () {
-                $(this).parent().hide();
+                $(".shadow").hide();
+                $(this).parent().parent().hide();
+                var param = {};
+                param.name = "wang";
+                param._id = $("#update_dn").attr("data-id");
+
+                post_edit_notify(param, "/dailynews/edit/notify");
             });
             $(".source_select").change(function () {
                 var source = $(this).children('option:selected').text();
@@ -632,6 +1225,7 @@
                 param.title = $("#add_title").val();
                 param.link = $("#add_link").val();
                 var person = $(this).parent().siblings(".person_add_").children(".person_select").children('option');
+
                 var persons = [];
                 $.each(person, function (n, value) {
                     var data = {};
@@ -657,7 +1251,6 @@
                 var tags = [];
                 $.each(name, function (n, value) {
                     tags.push($(value).attr("title"));
-
                 });
                 param.tags = tags;
                 if (param.created_at == "" || param.link == "" || param.excerpt == "") {
@@ -990,7 +1583,7 @@
             }
 
             $(".tags_select").select2({
-                placeholder: 'input tags',
+                placeholder: '请输入关联的标签',
                 ajax: {
                     url: "/api/dailynews/tags/",
                     cache: true,
@@ -1015,7 +1608,7 @@
             });
 
             $(".person_select").select2({
-                placeholder: 'input persons',
+                placeholder: '请输入关联的人物',
                 ajax: {
                     url: "/api/person/name/dy",
                     cache: true,
@@ -1035,7 +1628,7 @@
             });
 
             $(".company_select").select2({
-                placeholder: 'input companies',
+                placeholder: '请输入关联的公司',
                 ajax: {
                     url: "/api/company/name/dy",
                     cache: true,

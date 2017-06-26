@@ -12,11 +12,13 @@
         text-align: center;
         width: 100%;
     }
-    h1 a{
+
+    h1 a {
         border: 2px solid;
         padding: 5px 10px;
         font-size: 16px;
     }
+
     .person_des {
         display: block;
         text-align: justify;
@@ -26,6 +28,10 @@
         padding: 15px;
         line-height: 25px;
         margin: 10px;
+    }
+
+    .person_des img {
+        display: none;
     }
 
     .person_avatar img {
@@ -145,6 +151,7 @@
         vertical-align: middle;
         top: 50%;
     }
+
     .title {
         display: block;
         /*width: 80%;*/
@@ -170,7 +177,8 @@
     .source a {
         color: #323232;
     }
-    .source{
+
+    .source {
         position: relative;
         display: block;
         background: #89cafc;
@@ -187,7 +195,8 @@
         margin-top: 10px;
         cursor: pointer;
     }
-    .source_i{
+
+    .source_i {
         display: block;
         width: 100%;
         text-align: right;
@@ -247,6 +256,22 @@
 
 
     </div>
+
+    @if(isset($detail->basic_info)&&!empty($detail->basic_info))
+        <span class="menu_title">基本信息</span>
+        <span class="person_des">
+            @foreach($detail->basic_info as $k =>$v)
+                {!!$v[0].":".$v[1]."<br>"!!}
+            @endforeach
+        </span>
+    @endif
+    @if(isset($detail->extra_info)&&!empty($detail->extra_info))
+        @foreach($detail->extra_info as $k =>$v)
+            <span class="menu_title">{!! $v[0] !!}</span>
+            <span class="person_des">{!! $v[1] !!}</span>
+        @endforeach
+    @endif
+
     @if(isset($detail->founderCases)&&!empty($detail->founderCases))
         <span class="menu_title">创业经历</span>
         <div class="menu_label">

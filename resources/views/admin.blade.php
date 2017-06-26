@@ -7,7 +7,13 @@
     <link href="/css/app.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="https://oi7gusker.qnssl.com/qisu/logo/%20qisu%20logo-02.png">
     <style>
-        @media (max-width: 748px){
+        .navbar-nav > li > a:hover {
+            color: #1e88e5 !important;
+            -webkit-transition: all .3s ease-in .1s;
+            transition: all .3s ease-in .1s;
+        }
+
+        @media (max-width: 748px) {
 
         }
     </style>
@@ -37,31 +43,32 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                     <li><a href="/qs-admin/show">CompanyList</a></li>
-                    <li><a href="/dailynews">DailyNews(T)</a></li>
-                    <li><a href="/dailynews_p">DailyNews(P)</a></li>
+                    <li><a href="/dailynews">DailyNews</a></li>
                     <li><a href="/qs-admin/keynews">Highlight</a></li>
                     <li><a href="/dailyfunds">DailyFunds</a></li>
                     <li><a href="/qs-admin/tag/manage">Tags(T)</a></li>
                     <li><a href="/qs-admin/tag/manage_p">Tags(P)</a></li>
+                    <li><a href="/baike">百科人物采集</a></li>
 
-                    <li class="mobile_search">
-                        <form style="position: relative;top: 10px;" method="POST" action="/qs-admin/search">
-                            <input type="text" name="k" id="k" placeholder="search "/>
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        </form>
-                    </li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->
                 <ul class="nav navbar-nav navbar-right">
-
+                    <li class="mobile_search" style="width: 100px;margin-right: 50px;">
+                        <form style="position: relative;top: 10px;" method="POST" action="/qs-admin/search">
+                            <input type="text" name="k" id="k" placeholder="search "/>
+                            <?php //echo method_field('PUT'); ?>
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        </form>
+                    </li>
                     <!-- Authentication Links -->
                     @if (Auth::guest())
                         <li><a href="{{ url('/login') }}">Login</a></li>
                         <li><a href="{{ url('/register') }}">Register</a></li>
                     @else
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
 
@@ -110,24 +117,31 @@
 </div>
 </body>
 <script>
-//    $(function(){
-//        $(".navbar-toggle").click(function(){
-//            $("#app-navbar-collapse").removeClass("collapse");
-//            $("#app-navbar-collapse").toggle();
-//        })
-//    })
+    //    $(function(){
+    //        $(".navbar-toggle").click(function(){
+    //            $("#app-navbar-collapse").removeClass("collapse");
+    //            $("#app-navbar-collapse").toggle();
+    //        })
+    //    })
 </script>
 
 <script type="text/javascript" src="https://qs.geekheal.net:6001/socket.io/socket.io.js"></script>
+{{--<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>--}}
 <script src="/js/app.js"></script>
 <script>
     window.Echo.channel('dailynews.edit.1')
             .listen('EditNotify', function (data) {
-                $("[data-id=" + data._id + "]").children(".labels")[0].innerHTML = "<label class='latest'>Someone is Editing</label>";
+                if (data.user == "wang") {
+                    $(".editing").hide();
+                } else {
+                    $(".tags[data-id=" + data._id + "]").children(".pub_date").after("<label class='pubished editing'>" + data.user + " is Editing</label>");
+
+                }
+
             });
     window.Echo.channel('dailynews.pub.1')
             .listen('PubState', function (data) {
-                $("[data-id=" + data._id + "]").children(".labels")[0].innerHTML = "<label class='latest'>已发布</label>";
+//                $(".tags[data-id=" + data._id + "]").children(".pub_date").after("<label class='pubished'>已发布</label>");
             });
 
 </script>

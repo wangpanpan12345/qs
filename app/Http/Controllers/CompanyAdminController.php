@@ -7,8 +7,10 @@ use App\Companies;
 use App\Founders;
 use App\Invests;
 use App\DailyNews;
+use App\Items;
 use App\Logs;
 use App\Tags;
+use App\CompanyIC;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -49,7 +51,10 @@ class CompanyAdminController extends Controller
      */
     public function company_by_page()
     {
-        $limit = 60;
+        /**
+         *
+         */
+        $limit = 40;
         $projections = ["*"];
         //当排序数据量过大,超过内存分配时,需要加此参数,使用硬盘的空间
         $options = ["allowDiskUse" => true];
@@ -57,17 +62,136 @@ class CompanyAdminController extends Controller
 //        $companies = \DB::collection('companies')->paginate($limit, $projections);
 //
         $companies = Companies::orderBy('complete_score', 'desc')->options(["allowDiskUse" => true])->paginate($limit, $projections);//
-//        dd($companies);
-//        foreach ($companies as $K => $V) {
-////            if (isset($V["complete_score"]) && !empty($V["complete_score"]))
-////                continue;
-//            $score = $this->score_company($V);
-//            $company = Companies::find($V["_id"]);
-//            $company->complete_score = $score;
-//            $company->save();
-////            dd($company);
-//        }
-        return view('admin/show', ['cs' => $companies]);
+
+
+        $tags = Tags::where("source", "geekheal")->where("group_id", '58527195c3666efea044ab4a')->get();
+
+        return view('admin/show', ['cs' => $companies, "tags" => $tags]);
+    }
+
+
+    public function company_s_page(Request $r)
+    {
+        $search = [];
+        $page = isset($r["page"]) ? intval($r["page"]) - 1 : 0;
+//        $page = 2;
+//        return $page;
+
+        if (isset($r["all"]) && $r["all"] == 1) {
+//            return $r["all"];
+            $c = Companies::complexSearch(array(
+                    'type' => 'companies',
+//                    "scroll" => '1m',
+                    'body' => array(
+                        "sort" => array(
+                            array(
+                                "complete_score" => array(
+                                    "order" => "desc"
+                                )
+                            )
+//                            array(
+//                                "name.keyword" => array(
+//                                    "order" => "desc"
+//                                )
+//                            )
+                        ),
+                        'size' => 40,
+                        'from' => $page * 40
+                    )
+                )
+            );
+
+            $total = $c->getHits()["total"];
+            $tpage = intval($total / 40) + 1;
+            $ph = $this->paging($tpage, $page);
+            return ["b" => $search, "a" => $c->getHits(), "error" => 0, "ph" => $ph];
+
+        }
+//        return "OK";
+
+        if (isset($r["industry"])) {
+            if ($r["industry"] != "企业") {
+                $industry = ["terms" => ["tags.keyword" => [$r["industry"]]]];
+                $search[] = $industry;
+            }
+
+        }
+        if (isset($r["tags"])) {
+            $tags = ["terms" => ["tags.keyword" => [$r["tags"]]]];
+            $search[] = $tags;
+        }
+        if (isset($r["area"])) {
+            $areav = $r["area"] == "国内" ? 1 : 0;
+            $area = ["terms" => ["ic" => [$areav]]];
+            $search[] = $area;
+        }
+        if (isset($r["scale"])) {
+            $scale = ["terms" => ["scale.keyword" => [$r["scale"]]]];
+            $search[] = $scale;
+        }
+
+//        return empty($search);
+        $c = Companies::complexSearch(array(
+            'type' => 'companies',
+            'body' => array(
+                "query" => array(
+                    "bool" => array(
+                        "must" => $search
+                    )
+                ),
+                "sort" => array(
+                    array(
+                        "complete_score" => array(
+                            "order" => "desc"
+                        )
+                    )
+                ),
+                'size' => 40,
+                'from' => $page * 40
+            )
+        ));
+        $total = $c->getHits()["total"];
+        $tpage = intval($total / 40) + 1;
+        $ph = $this->paging($tpage, $page);
+        return ["b" => $search, "a" => $c->getHits(), "error" => 0, "ph" => $ph];
+
+    }
+
+
+    public function paging($tpage, $page)
+    {
+//        $page_html = "";
+        if ($tpage == 1) {
+            $page_html = '<li class="active" ><span > 1</span ></li>';
+            return $page_html;
+        } else {
+            if ($page - 1 > 0 && $page + 1 < $tpage) {
+                $page_html = '<li><span > 1</span ></li >' .
+                    '<li><span page="' . ($page) . '"> ' . ($page) . '</span ></li >' .
+                    '<li class="active" page="' . ($page + 1) . '"><span > ' . ($page + 1) . '</span ></li >' .
+                    '<li><span page="' . ($page + 2) . '"> ' . ($page + 2) . '</span ></li >' ;
+//                    '<li><span page="' . $tpage . '"> ' . ($tpage) . '</span ></li>';
+                return $page_html;
+
+            }
+            if ($page == 1 && $page + 1 < $tpage) {
+                $page_html = '<li><span page="' . ($page) . '"> ' . ($page) . '</span ></li >' .
+                    '<li class="active" page="' . ($page + 1) . '"><span > ' . ($page + 1) . '</span ></li >' .
+                    '<li><span page="' . ($page + 2) . '"> ' . ($page + 2) . '</span ></li >' ;
+//                    '<li><span page="' . $tpage . '"> ' . ($tpage) . '</span ></li>';
+                return $page_html;
+            }
+            if ($page + 1 < $tpage) {
+                $page_html =
+//                    '<li><span page="' . ($page) . '"> ' . ($page) . '</span ></li >' .
+                    '<li class="active" page="' . ($page + 1) . '"><span > ' . ($page + 1) . '</span ></li >' .
+                    '<li><span page="' . ($page + 2) . '"> ' . ($page + 2) . '</span ></li >' .
+                    '<li><span page="' . $tpage . '"> ' . ($tpage) . '</span ></li>';
+            }
+
+
+        }
+        return $page_html;
     }
 
     /**
@@ -83,10 +207,17 @@ class CompanyAdminController extends Controller
         }
         $time_line = DailyNews::where('company', 'elemMatch', ['name' => ['$eq' => $detail->name]])->orderby("created_at", "desc")->get();
         $merger = Companies::where('acquisitions', 'elemMatch', ['name' => ['$eq' => $detail->name]])->first();
+        $ICInfo = [];
+        if ($detail->ic > 0) {
+            $fullName = $detail->fullName;
+            $ICInfo = CompanyIC::where("fullName", $fullName)->first();
+        }
+
         $result = [
             "detail" => $detail,
             "timeline" => $time_line,
             "merge" => $merger,
+            "ic" => $ICInfo
         ];
         return view('admin.detail', $result);
     }
@@ -105,11 +236,16 @@ class CompanyAdminController extends Controller
         }
         $time_line = DailyNews::where('company', 'elemMatch', ['name' => ['$eq' => $name]])->get();
         $merger = Companies::where('acquisitions', 'elemMatch', ['name' => ['$eq' => $detail->name]])->first(["_id", "name"]);
-
+        $ICInfo = [];
+        if ($detail->ic > 0) {
+            $fullName = $detail->fullName;
+            $ICInfo = CompanyIC::where("fullName", $fullName)->first();
+        }
         $result = [
             "detail" => $detail,
             "timeline" => $time_line,
             "merge" => $merger,
+            "ic" => $ICInfo
         ];
 
         return view('admin.detail', $result);
@@ -180,7 +316,7 @@ class CompanyAdminController extends Controller
     public function export_avatar()
     {
 
-        Companies::where("avatar", "like", "%https://crunchbase-production%")->chunk(200, function ($companies) {
+        Companies::where("avatar", "like", " % https://crunchbase-production%")->chunk(200, function ($companies) {
             foreach ($companies as $company) {
                 $pathinfo = pathinfo($company->avatar);
 
@@ -189,7 +325,7 @@ class CompanyAdminController extends Controller
                 $log = $company->avatar . "\t" . "qisu/image/avatar/" . $pathinfo["basename"];
                 echo $log . "</br>";
 
-                $this->write_to_log($log, 'avatar_crunch_m.txt');
+                $this->write_to_log($log, 'avatar_crunch_m . txt');
             }
         });
     }
@@ -197,7 +333,8 @@ class CompanyAdminController extends Controller
     /**
      * 更新头像,将七牛的地址替换原地址
      */
-    public function update_avatar()
+    public
+    function update_avatar()
     {
         Companies::chunk(200, function ($companies) {
             foreach ($companies as $company) {
@@ -214,7 +351,7 @@ class CompanyAdminController extends Controller
 //                    echo $pathinfo["basename"];
 //                    $company->avatar = "https://oi7gusker.qnssl.com/qisu/image/avatar_default.jpg";
 //                    $company->save();
-//                    echo $company->avatar . '</br>';
+//                    echo $company->avatar . ' </br > ';
 //                }
                 if (isset($pathinfo["dirname"]) && $pathinfo["dirname"] == "http://static-site.geekheal.net/qisu/image") {
                     $company->avatar = 'https://oi7gusker.qnssl.com/qisu/image/' . $pathinfo["basename"];
@@ -233,7 +370,8 @@ class CompanyAdminController extends Controller
         });
     }
 
-    public function update_crunch_avatar()
+    public
+    function update_crunch_avatar()
     {
         Companies::where("avatar", "like", "%/assets/%")->chunk(200, function ($companies) {
             foreach ($companies as $company) {
@@ -336,7 +474,8 @@ class CompanyAdminController extends Controller
      * @param $log
      * @param $file
      */
-    public function write_to_log($log, $file)
+    public
+    function write_to_log($log, $file)
     {
         Storage::append($file, $log);
 //        Storage::append('avatar_crunch_m.txt', $log);
@@ -353,7 +492,8 @@ class CompanyAdminController extends Controller
 //        fclose($fp);
     }
 
-    public function tag_search($tag)
+    public
+    function tag_search($tag)
     {
 
 //        global $now;
@@ -397,7 +537,8 @@ class CompanyAdminController extends Controller
     /**
      * 导出所有公司的城市信息
      */
-    public function city()
+    public
+    function city()
     {
         Companies::chunk(200, function ($companies) {
             foreach ($companies as $company) {
@@ -415,7 +556,8 @@ class CompanyAdminController extends Controller
      * @param $tag
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function tag_list($tag)
+    public
+    function tag_list($tag)
     {
 
         $limit = 60;
@@ -436,7 +578,8 @@ class CompanyAdminController extends Controller
     /**
      * 格式化公司融资的时间与货币金额,暂时废弃
      */
-    public function format_raisefund()
+    public
+    function format_raisefund()
     {
         Companies::where('referer', 'crunchbase')->chunk(2000, function ($companys) {
             foreach ($companys as $k => $v) {
@@ -529,7 +672,8 @@ class CompanyAdminController extends Controller
      * @param string $str
      * @return string
      */
-    public function findNum($str = '')
+    public
+    function findNum($str = '')
     {
         $str = trim($str);
         if (empty($str)) {
@@ -546,7 +690,8 @@ class CompanyAdminController extends Controller
     /**
      * 已废弃,修补bug用
      */
-    public function format_raisefund_re()
+    public
+    function format_raisefund_re()
     {
 
         Companies::where('raiseFunds', 'elemMatch', ['amount' => ['$lt' => 1]])->where('referer', 'crunchbase')->chunk(200, function ($tags) {
@@ -581,7 +726,8 @@ class CompanyAdminController extends Controller
     /**
      * 投资日期的格式化,暂时废弃
      */
-    public function invest_date_format_crunch()
+    public
+    function invest_date_format_crunch()
     {
 //
         Companies::where('referer', '=', 'crunchbase')->chunk(200, function ($companys) {
@@ -613,7 +759,8 @@ class CompanyAdminController extends Controller
     /**
      * 并购日期的格式化,暂时废弃
      */
-    public function acquisitions_date_format_crunch()
+    public
+    function acquisitions_date_format_crunch()
     {
 //
         Companies::where('referer', '=', 'crunchbase')->chunk(200, function ($companys) {
@@ -643,7 +790,8 @@ class CompanyAdminController extends Controller
         });
     }
 
-    public function index_all()
+    public
+    function index_all()
     {
 //        $books = Companies::search("嘉和生物");
 
@@ -735,9 +883,10 @@ class CompanyAdminController extends Controller
 //        DailyNews::addAllToIndex();
     }
 
-    public function format_company()
+    public
+    function format_company()
     {
-        DailyNews::where("company", "=", "")->chunk(200, function ($companys) {
+        DailyNews::where("company", "")->chunk(200, function ($companys) {
             foreach ($companys as $k => $v) {
                 if ($v->company == "" || $v->company[0] == "") {
                     echo $v->title;
@@ -746,7 +895,7 @@ class CompanyAdminController extends Controller
 //                dd();
 //                    $v->company = [];
 //                    $v->save();
-//                    dd("ok");
+////                    dd("ok");
                 }
 
 
@@ -755,7 +904,8 @@ class CompanyAdminController extends Controller
         });
     }
 
-    public function format_person()
+    public
+    function format_person()
     {
         DailyNews::where("person", "=", "")->chunk(200, function ($companys) {
             foreach ($companys as $k => $v) {
@@ -773,6 +923,22 @@ class CompanyAdminController extends Controller
             }
 
         });
+    }
+
+    public
+    function man_score(Request $r)
+    {
+        $id = $r["_id"];
+        $man_score = $r["man_score"];
+        $c = Companies::find($id);
+        $c->man_score = $man_score;
+        $o = $c->save();
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
+        return $return;
     }
 
 }

@@ -22,7 +22,7 @@ class NotesController
     {
         $limit = 50;
         $projections = ["*"];
-        $notes = Notes::where("author", Auth::user()->id)->orderby("updated_at", 'desc')->paginate($limit, $projections);
+        $notes = Notes::where("author", Auth::user()->id)->where("flag", "!=", 0)->orderby("updated_at", 'desc')->paginate($limit, $projections);
         return json_encode(["error" => 0, "notes" => $notes]);
     }
 
@@ -33,10 +33,40 @@ class NotesController
      */
     public function update(Request $r)
     {
+        $UID = Auth::user()->id;
         $id = $r->get("_id");
+
         $content = $r["content"];
         $notes = Notes::find($id);
+        if ($UID != $notes->author) {
+            $return = ['error' => 2, 'result' => ""];
+            return $return;
+        }
         $notes->content = $content;
+        $o = $notes->save();
+        if (!$o) {
+            $return = ['error' => 1, 'result' => $o];
+        } else {
+            $return = ['error' => 0, 'result' => $o];
+        }
+        return $return;
+    }
+
+    /**
+     * @param Request $r
+     * @return array
+     */
+
+    public function delete(Request $r)
+    {
+        $UID = Auth::user()->id;
+        $id = $r->get("_id");
+        $notes = Notes::find($id);
+        if ($UID != $notes->author) {
+            $return = ['error' => 2, 'result' => ""];
+            return $return;
+        }
+        $notes->flag = 0;
         $o = $notes->save();
         if (!$o) {
             $return = ['error' => 1, 'result' => $o];
@@ -66,9 +96,17 @@ class NotesController
         return $return;
     }
 
-    public function search(Request $r){
+    public function search(Request $r)
+    {
         $k = $r["k"];
-        $notes = Notes::where("content","like","%$k%")->get()->take(10);
+        $notes = Notes::where("content", "like", "%$k%")->where("flag", "!=", 0)->get()->take(10);
+        return json_encode(["error" => 0, "notes" => $notes]);
+    }
+
+    public function author_source(Request $r)
+    {
+        $id = $r["_id"];
+        $notes = Notes::where("author", $id)->where("flag", "!=", 0)->orderby("updated_at", 'desc')->get()->take(10);
         return json_encode(["error" => 0, "notes" => $notes]);
     }
 

@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\DailyFunds;
 use App\Tags;
 use App\Companies;
 use App\DailyNews;
 use App\Founders;
 use App\Logs;
+use App\Items;
+use App\QS;
 use App\KnowledgeCanned;
 use Carbon\Carbon;
+use Elasticquent\ElasticquentTrait;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use SphinxClient;
+//use SphinxClient;
+use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\Array_;
+use Psy\TabCompletion\Matcher\ObjectAttributesMatcher;
 
 class SearchAdminController extends Controller
 {
@@ -63,38 +70,110 @@ class SearchAdminController extends Controller
 //        }
         $time_s = time();
 
+//        $x = Companies::complexSearch(array(
+//           'type' => 'companies',
+//            'body' => array(
+//                "query" => array(
+//                    "bool" => array(
+//                        "must" => array(
+//                            "match_phrase" => array(
+//                                "_all" => array(
+//                                    "query" => $s,
+//                                    "slop" => 5
+//                                )
+//                            )
+//                        ),
+//                        "should" => array(
+//                            "multi_match" => array(
+//                                "query" => $s,
+//                                "type" => "most_fields",
+//                                "fields" => ["name^9", "detail^2", "slogan^6", "des^6", "fullName^8", "tags^8",
+//                                    "raiseFunds.organizations.name", "founder^4", "products.name^8"],
+//                                "operator" => "and",
+//                                "tie_breaker" => 0.3,
+//                                "minimum_should_match" => "50%"
+//                            )
+//                        )
+//                    )
+//                )
+//            ),
+//            'size' => 100,
+//            'from' => 0
+//        ));
+//
+//        dd($x);
+
+
         $c = Companies::complexSearch(array(
             'type' => 'companies',
             'body' => array(
                 "query" => array(
-                    "multi_match" => array(
-                        "query" => $s,
-                        "type" => "most_fields",
-                        "fields" => ["name^9", "detail^2", "slogan^6", "des^6", "fullName^8", "tags^8","raiseFunds.organizations.name"],
-                        "operator" => "and",
-                        "tie_breaker" => 0.3,
-                        "minimum_should_match" => "30%"
+                    "bool" => array(
+                        "must" => array(
+                            "match_phrase" => array(
+                                "_all" => array(
+                                    "query" => $s,
+                                    "slop" => 5
+                                )
+                            )
+                        ),
+                        "should" => array(
+                            "multi_match" => array(
+                                "query" => $s,
+                                "type" => "most_fields",
+                                "fields" => ["name^9", "detail^2", "slogan^6", "des^6", "fullName^8", "tags^8",
+                                    "raiseFunds.organizations.name", "founder^4", "products.name^8"],
+                                "operator" => "and",
+                                "tie_breaker" => 0.3,
+                                "minimum_should_match" => "50%"
+                            )
+                        )
                     )
-                )
+                ),
+                "highlight" => array(
+                    "require_field_match" => false,
+                    "fields" => array(
+                        '*' => (Object)array()
+                    )
+                ),
+
             ),
-            'size' => 100
+
+            'size' => 100,
+            'from' => 0
         ));
+
         $p = Founders::complexSearch(array(
             'type' => 'founders',
             'body' => array(
                 "query" => array(
-                    "multi_match" => array(
-                        "query" => $s,
-                        "type" => "cross_fields",
-                        "fields" => ["name^9", "des^4", "tags^8", "paper.name^2", "patent.des^4", "patent.name", "workedCases.title", "workedCases.des",
-                            "workedCases.name", "edu_background.degree", "edu_background.major", "edu_background.name","s_position"],
-                        "operator" => "and",
-                        "tie_breaker" => 0.3,
-                        "minimum_should_match" => "30%"
+                    "bool" => array(
+                        "must" => array(
+                            "match_phrase" => array(
+                                "_all" => array(
+                                    "query" => $s,
+                                    "slop" => 10
+                                )
+                            )
+                        ),
+                        "should" => array(
+                            "multi_match" => array(
+                                "query" => $s,
+                                "type" => "cross_fields",
+                                "fields" => ["name^9", "des^4", "tags^8", "paper.name", "patent.des^4", "patent.name",
+                                    "workedCases.title", "workedCases.des", "workedCases.name", "edu_background.degree",
+                                    "edu_background.major", "edu_background.name", "s_position"],
+                                "operator" => "and",
+                                "tie_breaker" => 0.3,
+                                "minimum_should_match" => "30%"
+                            )
+                        )
+
                     )
                 )
             ),
-            'size' => 100
+            'size' => 100,
+            'from' => 0
         ));
         $n = DailyNews::complexSearch(array(
             'type' => 'dailynews',
@@ -110,21 +189,123 @@ class SearchAdminController extends Controller
                     )
                 )
             ),
-            'size' => 100
+            'size' => 100,
+            'from' => 0
         ));
+        $k = KnowledgeCanned::complexSearch(array(
+            'type' => 'knowledge_canned',
+            'body' => array(
+                "query" => array(
+                    "bool" => array(
+                        "must" => array(
+                            "match_phrase" => array(
+                                "_all" => array(
+                                    "query" => $s,
+                                    "slop" => 5
+                                )
+                            )
+                        ),
+                        "should" => array(
+                            "multi_match" => array(
+                                "query" => $s,
+                                "type" => "most_fields",
+                                "fields" => ["tags^8", "content"],
+                                "operator" => "and",
+                                "tie_breaker" => 0.3,
+                                "minimum_should_match" => "30%"
+                            )
+                        )
+                    )
+                )
+            ),
+            'size' => 100,
+            'from' => 0
+        ));
+        $i = Items::complexSearch(array(
+            'type' => 'items',
+            'body' => array(
+                "query" => array(
+                    "bool" => array(
+                        "must" => array(
+                            "match_phrase" => array(
+                                "_all" => array(
+                                    "query" => $s,
+                                    "slop" => 5
+                                )
+                            )
+                        ),
+                        "should" => array(
+                            "multi_match" => array(
+                                "query" => $s,
+                                "type" => "most_fields",
+                                "fields" => ["tags^10", "des^6", "name^8", "basic_info^4", "extra_info"],
+                                "operator" => "and",
+                                "tie_breaker" => 0.3,
+                                "minimum_should_match" => "80%",
+                            )
+                        )
+                    )
+                )
+            ),
+            'size' => 100,
+            'from' => 0
+        ));
+        $df = DailyFunds::complexSearch(array(
+            'type' => 'dailyfunds',
+            'body' => array(
+                "query" => array(
+                    "bool" => array(
+                        "must" => array(
+                            "match_phrase" => array(
+                                "_all" => array(
+                                    "query" => $s,
+                                    "slop" => 5
+                                )
+                            )
+                        ),
+                        "should" => array(
+                            "multi_match" => array(
+                                "query" => $s,
+                                "type" => "most_fields",
+                                "fields" => ["company_df^10", "invest^6", "fund_story^2"],
+                                "operator" => "and",
+                                "tie_breaker" => 0.3,
+                                "minimum_should_match" => "30%"
+                            )
+                        )
+                    )
+                )
+            ),
+            'size' => 100,
+            'from' => 0
+        ));
+
         $time_e = time();
         $t = $time_e - $time_s;
         $result_company = $c->getHits();
         $result_news = $n->getHits();
         $result_person = $p->getHits();
-//        dd($result_person,$t);
+        $result_knowledge = $k->getHits();
+        $result_item = $i->getHits();
+        $result_funds = $df->getHits();
+//        dd($result_funds);
+        $search_log_user = Auth::user()->_id;
+        $search_log_keyword = $s;
+        $search_log_result_num = $result_company["total"] + $result_news["total"] + $result_person["total"] +
+            $result_knowledge["total"] + $result_item["total"];
+//        $search_log_user_want = [];
+        $search_log = $search_log_keyword . "\t" . $search_log_result_num . "\t" . $search_log_user;
+        $logs = new \App\Lib\QLogs();
 
+        $logs->write_log($search_log);
 
-//        dd($result_company);
         $result = array(
+            "knowledge" => $result_knowledge,
             "company" => $result_company,
             "person" => $result_person,
             "news" => $result_news,
+            "item" => $result_item,
+            "funds" => $result_funds,
             "k" => $s,
         );
 //        dd($result);
@@ -190,7 +371,10 @@ class SearchAdminController extends Controller
             ->get(["tags", "is_pub", "company", "flag"]);
         $knowledge = KnowledgeCanned::where('created_at', '>', $today_begin)
             ->where('created_at', '<', $today_end)
-            ->get(["tags", "type", "_id", "flag"]);
+            ->get();
+        $item = Items::where('created_at', '>', $today_begin)
+            ->where('created_at', '<', $today_end)
+            ->get(["name"]);
         $d_logs = Logs::where('created_at', '>', $today_begin)
             ->where('created_at', '<', $today_end)
             ->orderBy("created_at", "desc")->get();
@@ -205,6 +389,7 @@ class SearchAdminController extends Controller
         $person_static = count($person);
         $company_static = count($company);
         $knowledge_count = count($knowledge);
+        $item_count = count($item);
         $tags = Tags::All();
         $result = array(
             "count" => $count,
@@ -212,9 +397,11 @@ class SearchAdminController extends Controller
             "knowledge" => $knowledge,
             "company_new" => $company_static,
             "persons" => $person,
+            "item" => $item,
             "person_new" => $person_static,
             "news_new" => $news_static,
             "knowledge_new" => $knowledge_count,
+            "item_new" => $item_count,
             "deal_c" => $deal_c,
             'tags' => $tags,
             "logs" => $d_logs,

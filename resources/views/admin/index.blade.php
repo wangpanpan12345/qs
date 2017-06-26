@@ -148,6 +148,7 @@
         今日新增新闻数据<span class="num">{{$news_new}}</span>,
         更新<span class="num">{{$company_new}}</span>个公司,
         更新<span class="num">{{$person_new}}</span>个人.
+        更新<span class="num">{{$item_new}}</span>个词条.
         更新<span class="num">{{$knowledge_new}}</span>个知识罐头.
 
     </div>
@@ -162,6 +163,20 @@
         @foreach($companies as $k=>$v)
         <span><a style="margin: 0 auto;" class="geekheal_tag"
         href="/qs-admin/detail/{{$v->_id}}">{{$v->name}}</a></span>
+        @endforeach
+    </div>
+    <div class="">更新词条</div>
+    <div class="companies">
+        @foreach($item as $k=>$v)
+            <span><a style="margin: 0 auto;" class="geekheal_tag"
+                     href="/item/{{$v->name}}">{{$v->name}}</a></span>
+        @endforeach
+    </div>
+    <div class="">更新知识</div>
+    <div class="companies">
+        @foreach($knowledge as $k=>$v)
+            <span><a style="margin: 0 auto;" class="geekheal_tag"
+                     href="/timeline/tag/{{$v->tags}}">{{$v->tags}}-{{$v->type}}</a></span>
         @endforeach
     </div>
     <div class="tags_flag">显示Tags</div>

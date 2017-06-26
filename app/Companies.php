@@ -34,6 +34,11 @@ class Companies extends Moloquent
         }
 
     }
+//
+//    public function IC()
+//    {
+//        return $this->hasOne('App\CompanyIC', 'fullName', 'fullName');
+//    }
 
 
     public function score_company($company)
@@ -56,10 +61,10 @@ class Companies extends Moloquent
     {
         return 'qisu';
     }
-    function getTypeName()
-    {
-        return 'companies';
-    }
+//    function getTypeName()
+//    {
+//        return 'companies';
+//    }
 
 
 }

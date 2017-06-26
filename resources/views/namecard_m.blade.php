@@ -44,10 +44,8 @@ function make_ticket($appId, $appsecret)
 
         $access_token = $result['access_token'];
         if ($access_token) {
-
-            $data["expire_time"] = time() + 7000;
-            $data["access_token"] = $access_token;
-
+            $data->expire_time = time() + 7000;
+            $data->access_token = $access_token;
             $fp = fopen($access_token_file, "w");
             fwrite($fp, json_encode($data));
             fclose($fp);
@@ -64,8 +62,8 @@ function make_ticket($appId, $appsecret)
         $result = json_decode($json, true);
         $ticket = $result['ticket'];
         if ($ticket) {
-            $data["expire_time"] = time() + 7000;
-            $data["jsapi_ticket"] = $ticket;
+            $data->expire_time = time() + 7000;
+            $data->jsapi_ticket = $ticket;
             $fp = fopen($jsapi_ticket_file, "w");
             fwrite($fp, json_encode($data));
             fclose($fp);
