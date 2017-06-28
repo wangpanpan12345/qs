@@ -621,22 +621,26 @@
         .delete a {
             display: none;
         }
-        .core_edit{
+
+        .core_edit {
             width: 100%;
         }
-        .taps{
+
+        .taps {
             display: inline-block;
         }
-        .type_tap{
+
+        .type_tap {
             margin-bottom: 10px;
         }
-        .news_wrap{
+
+        .news_wrap {
             margin-top: 10px;
         }
-        .edit_button{
-            display: none!important;
-        }
 
+        .edit_button {
+            display: none !important;
+        }
 
         .delete {
             position: absolute;
@@ -1718,8 +1722,5 @@
         $(".tags_select").select2();
 
     </script>
-
-@endsection
-@section('js')
 
 @endsection

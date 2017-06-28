@@ -81,11 +81,11 @@ return [
         ],
         'mongodb' => [
             'driver' => 'mongodb',
-            'host' => env('DB_HOST', '124.42.117.168'),
-            'port' => env('DB_PORT', 27017),
-            'database' => env('DB_DATABASE','qisu'),
-            'username' => env('DB_USERNAME','qisu'),
-            'password' => env('DB_PASSWORD','qisu'),
+            'host' => env('DB_HOST', ''),
+            'port' => env('DB_PORT', ''),
+            'database' => env('DB_DATABASE',''),
+            'username' => env('DB_USERNAME',''),
+            'password' => env('DB_PASSWORD',''),
 //            'options' => ['replicaSet' => 'foba'],
             'options' => ['database' => 'qisu'], // sets the authentication database required by mongo 3
         ],

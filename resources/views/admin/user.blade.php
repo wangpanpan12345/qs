@@ -567,7 +567,7 @@
     </div>
 
     <script src="/js/ckeditor/ckeditor.js"></script>
-    <script src="/js/ckeditor/config.js"></script>
+    {{--<script src="/js/ckeditor/config.js"></script>--}}
     {{--<script src="//cdn.bootcss.com/ckeditor/4.7.0/config.js"></script>--}}
     {{--<script src="//cdn.bootcss.com/wangeditor/2.1.20/js/wangEditor.min.js"></script>--}}
     <script>
