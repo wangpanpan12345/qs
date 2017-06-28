@@ -232,7 +232,9 @@ Route::get('funding/story/{key}', 'BaikeController@search_engine_keywords_starte
 //member
 Route::get('/member/{date}', 'PhantomjsController@key_news_shared_list');
 
-
+Route::get('/demos', function(){
+    return view("demos");
+});
 
 
 

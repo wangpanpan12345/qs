@@ -1720,3 +1720,6 @@
     </script>
 
 @endsection
+@section('js')
+
+@endsection

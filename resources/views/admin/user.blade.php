@@ -83,6 +83,7 @@
     .mission_panel, .collect_panel, .memory_panel {
         padding: 20px;
         display: none;
+        min-height: 1000px;
     }
 
     .mission_panel h4 {
@@ -363,12 +364,36 @@
         color: #fff;
         margin: 30px 0;
         height: 40px;
-        display: block;
+        display: inline-block;
         width: 60px;
         line-height: 40px;
         text-align: center;
         border-radius: 5px;
         background: #48b3f6;
+    }
+
+    .save_status {
+        display: inline-block;
+        display: none;
+        animation: fade-in infinite; /*动画名称*/
+        animation-duration: .9s; /*动画持续时间*/
+        -webkit-animation: fade-in .9s infinite; /*针对webkit内核*/
+        animation-iteration-count: 2;
+    }
+
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+        /*初始状态 透明度为0*/
+        40% {
+            opacity: 0;
+        }
+        /*过渡状态 透明度为0*/
+        100% {
+            opacity: 1;
+        }
+        /*结束状态 透明度为1*/
     }
 
     .score {
@@ -381,8 +406,9 @@
         top: 0;
         right: 0;
     }
-    .container{
-        width: 100%!important;
+
+    .container {
+        width: 90% !important;
     }
 
     @media (max-width: 748px) {
@@ -470,6 +496,7 @@
                 <div class="editor job_editor ">
                     <textarea id="jobEditor" cols="20" rows="2" class="ckeditor" data-id=0></textarea>
                     <a class="job_topic_submit" href="javascript:void(0);">提交</a>
+                    <a class="save_status">已经保存!</a>
                 </div>
             </div>
 
@@ -539,44 +566,12 @@
         <div class="clear"></div>
     </div>
 
-    <script src="//cdn.bootcss.com/ckeditor/4.7.0/ckeditor.js"></script>
-    <script src="//cdn.bootcss.com/ckeditor/4.7.0/config.js"></script>
+    <script src="/js/ckeditor/ckeditor.js"></script>
+    <script src="/js/ckeditor/config.js"></script>
+    {{--<script src="//cdn.bootcss.com/ckeditor/4.7.0/config.js"></script>--}}
     {{--<script src="//cdn.bootcss.com/wangeditor/2.1.20/js/wangEditor.min.js"></script>--}}
     <script>
-        CKEDITOR.editorConfig = function( config ) {
-            // Define changes to default configuration here.
-            // For complete reference see:
-            // http://docs.ckeditor.com/#!/api/CKEDITOR.config
 
-            // The toolbar groups arrangement, optimized for two toolbar rows.
-            config.toolbarGroups = [
-                { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
-                { name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
-                { name: 'links' },
-                { name: 'insert' },
-                { name: 'forms' },
-                { name: 'tools' },
-                { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
-                { name: 'others' },
-                '/',
-                { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-                { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
-                { name: 'styles' },
-                { name: 'colors' },
-                { name: 'about' }
-
-            ];
-
-            // Remove some buttons provided by the standard plugins, which are
-            // not needed in the Standard(s) toolbar.
-            config.removeButtons = 'Underline,Subscript,Superscript';
-
-            // Set the most common block elements.
-            config.format_tags = 'p;h1;h2;h3;pre';
-
-            // Simplify the dialog windows.
-            config.removeDialogTabs = 'image:advanced;link:advanced';
-        };
         var jobe = CKEDITOR.replace('jobEditor');
         var editor = CKEDITOR.replace('myEditor');
 
@@ -592,7 +587,6 @@
                 $("#myEditor").attr("edit_id", 0);
                 $(".memory_card").css({"border": "1px solid #e2e2e2"});
                 editor.setData("");
-//                editor.$txt.html("<p><br></p>");
             });
             /**
              * tab style definition
@@ -647,7 +641,6 @@
                 $(this).css({"border": "2px solid #48b3f6"});
                 var content = $(this).children(".m_content")[0].innerHTML;
                 $("#myEditor").attr("edit_id", $(this).attr("data-id"));
-//                editor.$txt.html(content);
                 editor.setData(content);
 
             });
@@ -682,7 +675,7 @@
                 }
             });
 
-            $("#myEditor").sisyphus();
+//            $("#myEditor").sisyphus();
 
 
             $(".headline-list").click(function () {
@@ -718,6 +711,19 @@
 //                $(".job_editor").hide();
 //                $(".background").hide();
             });
+//            var editor = CKEDITOR.instances.myEditor;
+//            editor.setData('默认值,可空', function () {
+//                CKEDITOR.instances.myEditor.document.on("keydown", function (event) {
+//                    if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
+//                    alert("Ctrl-S pressed");
+//                    console.log($("#memory").is(":visible"));
+//                    if ($("#memory").is(":visible")) {
+//                        alert("日记");
+//                    }
+//                    event.preventDefault();
+//                    return false;
+//                })
+//            });
 
             $('.job_opr select').change(function () {
                 var param = {};
@@ -863,7 +869,7 @@
                                         });
 
                                         html = html + '' + url + '</span>' +
-                                                '<span class="m_content"><p>' + e.content + '</p></span>' +
+                                                '<span class="m_content">' + e.content + '</span>' +
                                                 '<span class="m_date">' + e.updated_at + '</span>' +
                                                 '<span class="close">X</span>' +
                                                 '</li>';
@@ -910,7 +916,7 @@
                                             html = html + '<i>' + g + '</i>';
                                         });
                                         html = html + '<i>' + url + '</i> </span> ' +
-                                                '<span class="m_content"><p>' + e.content + '</p></span>' +
+                                                '<span class="m_content">' + e.content + '</span>' +
                                                 '<span class="m_date">' + e.updated_at + '</span>' +
                                                 '<span class="close">X</span>' +
                                                 '</li>';
@@ -965,6 +971,11 @@
                             },
                             success: function (data) {
                                 if (data.error == 0) {
+                                    $(".save_status").show();
+                                    setTimeout(function () {
+                                        $(".save_status").hide();
+                                    }, 2000);
+//                                    $(".save_status").hide();
 //                                    $(".job_editor").hide();
 //                                    $(".background").hide();
                                 } else {

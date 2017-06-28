@@ -116,6 +116,7 @@
     @yield('content')
 </div>
 </body>
+
 <script>
     //    $(function(){
     //        $(".navbar-toggle").click(function(){
@@ -124,25 +125,26 @@
     //        })
     //    })
 </script>
+@section("js")
+    <script type="text/javascript" src="https://qs.geekheal.net:6001/socket.io/socket.io.js"></script>
+    {{--<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>--}}
+    <script src="/js/app.js"></script>
+    <script>
+        window.Echo.channel('dailynews.edit.1')
+                .listen('EditNotify', function (data) {
+                    if (data.user == "wang") {
+                        $(".editing").hide();
+                    } else {
+                        $(".tags[data-id=" + data._id + "]").children(".pub_date").after("<label class='pubished editing'>" + data.user + " is Editing</label>");
 
-<script type="text/javascript" src="https://qs.geekheal.net:6001/socket.io/socket.io.js"></script>
-{{--<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>--}}
-<script src="/js/app.js"></script>
-<script>
-    window.Echo.channel('dailynews.edit.1')
-            .listen('EditNotify', function (data) {
-                if (data.user == "wang") {
-                    $(".editing").hide();
-                } else {
-                    $(".tags[data-id=" + data._id + "]").children(".pub_date").after("<label class='pubished editing'>" + data.user + " is Editing</label>");
+                    }
 
-                }
-
-            });
-    window.Echo.channel('dailynews.pub.1')
-            .listen('PubState', function (data) {
+                });
+        window.Echo.channel('dailynews.pub.1')
+                .listen('PubState', function (data) {
 //                $(".tags[data-id=" + data._id + "]").children(".pub_date").after("<label class='pubished'>已发布</label>");
-            });
+                });
 
-</script>
+    </script>
+@show
 </html>
